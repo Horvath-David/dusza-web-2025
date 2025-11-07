@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+import dotenv
+
+dotenv.load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +23,60 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*@o8wf7re&ps%mvlx%h3*$zjp+1_!-$m9*timj5k1xi8ciy3%0'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG") == "1"
+debug = r"""
+Service started
+V----------------------------------------------------V
+  _____       _                 
+ |  __ \     | |                
+ | |  | | ___| |__  _   _  __ _ 
+ | |  | |/ _ \ '_ \| | | |/ _` |
+ | |__| |  __/ |_) | |_| | (_| |
+ |_____/ \___|_.__/ \__,_|\__, |
+                           __/ |
+                          |___/ 
+"""
 
-ALLOWED_HOSTS = []
+production = r"""
+Service started
+V----------------------------------------------------V
+  _____               _            _   _             
+ |  __ \             | |          | | (_)            
+ | |__) | __ ___   __| |_   _  ___| |_ _  ___  _ __  
+ |  ___/ '__/ _ \ / _` | | | |/ __| __| |/ _ \| '_ \ 
+ | |   | | | (_) | (_| | |_| | (__| |_| | (_) | | | |
+ |_|   |_|  \___/ \__,_|\__,_|\___|\__|_|\___/|_| |_|
+
+
+"""
+
+print(debug if DEBUG else production)
+
+ALLOWED_HOSTS = ["*"]
+# Cookies
+if DEBUG:
+    SESSION_COOKIE_SAMESITE = None   # default Lax
+    SESSION_COOKIE_SECURE = False    # allow HTTP
+    CSRF_COOKIE_SAMESITE = None
+    CSRF_COOKIE_SECURE = False
+else:
+    SESSION_COOKIE_SAMESITE = "None"
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = "None"
+    CSRF_COOKIE_SECURE = True
+
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Application definition
@@ -37,11 +88,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'api',
     'authenticate'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
