@@ -28,14 +28,16 @@ def save_game_state(request: WSGIRequest):
         )
         return JsonResponse({
             "status": "Ok",
-            "id": game_state.id
+            "id": game_state.id,
+            "world_name": game_state.world.name,
         }, status=200)
 
     game_state = GameState.objects.get(id=state_id)
     game_state.state = body.get("state")
     game_state.save()
     return JsonResponse({
-        "status": "Ok"
+        "status": "Ok",
+        "world_name": game_state.world.name,
     }, status=200)
 
 
@@ -58,6 +60,7 @@ def get_game_state(request: WSGIRequest, state_id):
     return JsonResponse({
         "status": "Ok",
         "world_id": game_state.world.id,
+        "world_name": game_state.world.name,
         "state": game_state.state,
         "created_at": game_state.created_at,
         "last_updated_at": game_state.last_updated_at,

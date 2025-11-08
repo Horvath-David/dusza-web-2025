@@ -1,323 +1,165 @@
-All starts with `/api`
+```yaml
+/api:
+    /auth:
+        /login:
+            method: POST
+            description: Log in
+            request_body:
+                username: string   # The user's login name
+                password: string   # The user's password
+        
+        /logout:
+            method: GET
+            description: Log out the currently authenticated user
+        
+        /register:
+            method: POST
+            description: Register a new user
+            request_body:
+                username: string        # Unique username for login
+                display_name: string    # Publicly visible name
+                password: string       # User's chosen password
+    
+    /world:
+        /create:
+            method: POST
+            description: Create a new world
+            request_body:
+                name: string            # The world's name
+            response:
+                status: Ok              # Confirmation of success
+                id: number              # The newly created world's ID
+        
+        /all:
+            method: GET
+            description: Get all public worlds
+            response:
+                worlds:
+                    -   id: number          # World ID
+                        name: string        # World name
+                        owner: string       # Owner's display name
+                        is_playable: bool   # True if world can be played (potentially unused)
+                        dungeons: number    # Number of dungeons in the world
+                        cards: number       # Number of cards in the world
+        
+        /my:
+            method: GET
+            description: Get all worlds created by the authenticated user
+            response:  Same schema as /all
+        
+        /<world_id>/cards:
+            method: GET
+            description: Get all cards associated with a world
+            response:
+                cards:
+                    -   id: number
+                        name: string
+                        hp: number
+                        attack: number
+                        type: fire|earth|water|air
+                        is_boss: boolean
+        
+        /<world_id>/dungeons:
+            method: GET
+            description: Get all dungeons associated with a world
+            response:
+                dungeons:
+                    -   id: number
+                        name: string
+                        type: basic|small|big
+                        cards:
+                            -   id: number
+                                name: string
+                                hp: number
+                                attack: number
+                                type: fire|earth|water|air
+    
+    /card:
+        /create:
+            method: POST
+            description: Add new cards to a world
+            request_body:
+                world_id: number   # Target world ID
+                cards:
+                    -   name: string
+                        hp: number
+                        attack: number
+                        type: fire|earth|water|air
+            response:
+                skipped: # Cards that were not created
+                    -   name: string          # Skipped card's name
+                        reason: string        # Reason for skipping
+        
+        /<card_id>/update:
+            method: PATCH
+            description: Update a card's fields (all optional)
+            request_body:
+                name: string
+                hp: number
+                attack: number
+                type: fire|earth|water|air
+                is_boss: boolean
+        
+        /<card_id>/delete:
+            method: DELETE
+            description: Delete a card by ID
+    
+    /dungeon:
+        /create:
+            method: POST
+            description: Create a dungeon, assign it to a world, and assign cards to it
+            request_body:
+                name: string              # Dungeon name
+                cards: [ number ]         # List of card IDs to assign
+                type: basic|small|big     # Dungeon size/type
+                world_id: number          # Associated world ID
+            response:
+                status: Ok
+                id: number                # Newly created dungeon's ID
+        
+        /<dungeon_id>/update:
+            method: POST
+            description: Update an existing dungeon (all fields optional)
+            request_body:
+                name: string
+                cards: [ number ]         # List of card IDs to assign
+                type: basic|small|big
+        
+        get/<dungeon_id>:
+            method: GET
+            description: Get a dungeon and its cards by ID
+            response:
+                dungeon:
+                    id: number
+                    name: string
+                    type: basic|small|big
+                    cards:
+                        -   id: number
+                            name: string
+                            hp: number
+                            attack: number
+                            type: fire|earth|water|air
+    
+    /state:
+        /save:
+            method: PUT
+            description: Upload a game state to be saved for later use
+            request_body:
+                id: number                # Optional; object gets overwritten if exists
+                world_id: number          # World associated with this save
+                state: json               # The actual game state
+            response:
+                id: number                # Returned only if a new object was created
+                world_name: string        # The world's name associated with this save
+        
+        /<state_id>/get:
+            method: GET
+            description: Request a saved game state
+            response:
+                world_id: number
+                state: json
+                world_name: string        # The world's name associated with this save
+                created_at: ISO timestamp
+                last_updated_at: ISO timestamp
 
-`/auth/`
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/login` POST
-
-&nbsp;&nbsp;&nbsp;&nbsp;Log in
-
-```json
-{
-    "username": "string",
-    "password": "string"
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/logout` GET
-
-&nbsp;&nbsp;&nbsp;&nbsp;Log out
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/register` POST
-
-&nbsp;&nbsp;&nbsp;&nbsp;Register a new user
-
-```json
-{
-    "username": "string",
-    "display_name": "string",
-    "passwords": "string"
-}
-```
-
----
-
----
-
-`/world`
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/create` POST
-
-```json
-{
-    "name": "string"
-}
-```
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
-
-```json
-{
-    "status": "Ok",
-    "id": "[number]"
-    // the newly created world's id
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/all` GET
-
-&nbsp;&nbsp;&nbsp;&nbsp;Get all public worlds
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
-
-```json
-{
-    "worlds": [
-        {
-            "id": "number",
-            "name": "string",
-            "owner": "string",
-            // the owner's display name
-            "is_playable": "bool"
-            // true if the world can be played (potentially unused)
-            "dungeons": "number",
-            "cards": "number"
-        }
-    ]
-}
-```
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/my` GET
-
-&nbsp;&nbsp;&nbsp;&nbsp;Get all worlds created by the authenticated user
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns: same schema as in `/all`
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/cards` GET
-
-&nbsp;&nbsp;&nbsp;&nbsp;Returns all cards associated with a world
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
-
-```json
-{
-    "cards": [
-        {
-            "id": "number",
-            "name": "string",
-            "hp": "number",
-            "attack": "number",
-            "type": "fire|earth|water|air",
-            "is_boss": "boolean"
-        }
-    ]
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/dungeons` GET
-
-&nbsp;&nbsp;&nbsp;&nbsp;Returns all cards associated with a world
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
-
-```json
-{
-    "dungeons": [
-        {
-            "id": "number",
-            "name": "string",
-            "type": "basic|small|big",
-            "cards": [
-                {
-                    "id": "number",
-                    "name": "string",
-                    "hp": "number",
-                    "attack": "number",
-                    "type": "fire|earth|water|air"
-                }
-            ]
-        }
-    ]
-}
-```
-
----
-
----
-
-`/card`
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/create/` POST
-
-&nbsp;&nbsp;&nbsp;&nbsp;Add new cards to a world
-
-```json
-{
-    "world_id": "string/number",
-    "cards": [
-        {
-            "name": "string",
-            "hp": "number",
-            "attack": "number",
-            "type": "fire|earth|water|air"
-        }
-    ]
-}
-```
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
-
-```json
-{
-    "skipped": [
-        {
-            "name": "string",
-            // The skipped card's name
-            "reason": "string"
-            //The reason for skipping the card
-        }
-    ]
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/<card_id>/update` PATCH
-
-&nbsp;&nbsp;&nbsp;&nbsp;Update a card's fields
-
-&nbsp;&nbsp;&nbsp;&nbsp;All fields are optional
-
-```json
-{
-    "name": "string",
-    "hp": "number",
-    "attack": "number",
-    "type": "fire|earth|water|air",
-    "is_boss": "boolean"
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/<card_id>/delete` Delete
-
-&nbsp;&nbsp;&nbsp;&nbsp;Delete a card
-
----
-
----
-
-`/dungeon`
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/create` POST
-
-&nbsp;&nbsp;&nbsp;&nbsp;Create a dungeon, assign it to a world and assign cards to it
-
-```json
-{
-    "name": "string",
-    "cards": "number[]",
-    // a list of cards' ids to be assigned to this dungeon
-    "type": "basic|small|big",
-    "world_id": "number"
-}
-```
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
-
-```json
-{
-    "status": "Ok",
-    "id": "number"
-    // the id of the newly created dungeon
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/<dungeon_id>/update` POST
-
-&nbsp;&nbsp;&nbsp;&nbsp;Create a dungeon, assign it to a world and assign cards to it
-
-&nbsp;&nbsp;&nbsp;&nbsp;All fields are optional
-
-```json
-{
-    "name": "string",
-    "cards": "number[]",
-    // a list of cards' ids to be assigned to this dungeon
-    "type": "basic|small|big"
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`get/<dungeon_id>` GET
-
-&nbsp;&nbsp;&nbsp;&nbsp;Get a dungeon and its cards by id
-
-```json
-{
-    "dungeon": {
-        "id": "number",
-        "name": "string",
-        "type": "basic|small|big",
-        "cards": [
-            {
-                "id": "number",
-                "name": "string",
-                "hp": "number",
-                "attack": "number",
-                "type": "fire|earth|water|air"
-            }
-        ]
-    }
-}
-```
-
----
-
----
-
-`/state`
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/save` PUT
-
-&nbsp;&nbsp;&nbsp;&nbsp;Upload a game state to be saved for later use
-
-```json
-{
-    "id": "number",
-    // optional, overwritten if exists, created if doesn't exist
-    "world_id": "number",
-    // which world should be associated with the save. frontend use only
-    "state": "json"
-    // the game state itself
-}
-```
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns: only if and object was created
-
-```json
-{
-    "id": "number"
-    // the newly created object's id
-}
-```
-
----
-
-&nbsp;&nbsp;&nbsp;&nbsp;`/<state_id>/get` GET
-
-&nbsp;&nbsp;&nbsp;&nbsp;Request a game state to be used again
-
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns: only if and object was created
-
-```json
-{
-    "world_id": "number",
-    "state": "json",
-    "created_at": "ISO timestamp",
-    "last_updated_at": "ISO timestamp"
-}
 ```
