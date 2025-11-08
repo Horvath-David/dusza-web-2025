@@ -13,10 +13,13 @@ All starts with `/api`
 }
 ```
 
+---
+
 &nbsp;&nbsp;&nbsp;&nbsp;`/logout` GET
 
 &nbsp;&nbsp;&nbsp;&nbsp;Log out
 
+---
 
 &nbsp;&nbsp;&nbsp;&nbsp;`/register` POST
 
@@ -29,6 +32,8 @@ All starts with `/api`
     "passwords": "string"
 }
 ```
+---
+
 ---
 
 `/world`
@@ -48,6 +53,8 @@ All starts with `/api`
     "id": "[number]" // the newly created world's id
 }
 ```
+
+---
 
 &nbsp;&nbsp;&nbsp;&nbsp;`/all` GET
 
@@ -72,6 +79,8 @@ All starts with `/api`
 
 &nbsp;&nbsp;&nbsp;&nbsp;On success returns: same schema as in `/all`
 
+---
+
 &nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/cards` GET
 
 &nbsp;&nbsp;&nbsp;&nbsp;Returns all cards associated with a world
@@ -92,6 +101,8 @@ All starts with `/api`
     ]
 }
 ```
+
+---
 
 &nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/dungeons` GET
 
@@ -115,6 +126,8 @@ All starts with `/api`
     }]
 }
 ```
+
+---
 
 ---
 
@@ -151,6 +164,8 @@ All starts with `/api`
 }
 ```
 
+---
+
 &nbsp;&nbsp;&nbsp;&nbsp;`/<card_id>/update` PATCH
 
 &nbsp;&nbsp;&nbsp;&nbsp;Update a card's fields
@@ -166,10 +181,13 @@ All starts with `/api`
 }
 ```
 
+---
 
 &nbsp;&nbsp;&nbsp;&nbsp;`/<card_id>/delete` Delete
 
 &nbsp;&nbsp;&nbsp;&nbsp;Delete a card
+
+---
 
 ---
 
