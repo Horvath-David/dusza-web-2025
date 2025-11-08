@@ -93,7 +93,26 @@ All starts with `/api`
 }
 ```
 
+&nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/dungeons` GET
 
+&nbsp;&nbsp;&nbsp;&nbsp;Returns all cards associated with a world
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
+
+```json
+{
+    "dungeons": [{
+        "name": "string",
+        "type": "basic|small|big",
+        "cards": [{
+            "name": "string",
+            "hp": "number",
+            "attack": "number",
+            "type": "fire|earth|water|air",
+        }]
+    }]
+}
+```
 
 ---
 
