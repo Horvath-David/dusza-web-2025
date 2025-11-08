@@ -3,6 +3,7 @@ import { createContext, useState, type ReactNode } from "react";
 export type ElementsType = "fire" | "earth" | "water" | "wind";
 
 export interface CardType {
+  id: number;
   name: string;
   attack: number;
   health: number;
@@ -26,9 +27,13 @@ const CardCollectionContextProvider = (props: { children: ReactNode }) => {
   const [collection, setCollection] = useState<CardType[]>([]);
 
   const modifyCard = (id: number, card: CardType) => {
-    setCollection((prev) => {
-      const newCards = [...prev];
-      newCards[id] = card;
+    // setCollection((prev) => {
+    //   const newCards = [...prev];
+    //   newCards[id] = card;
+    //   return newCards;
+    // });
+    setCollection((prevCard) => {
+      const newCards = prevCard.map((x) => (x.id === id ? card : x));
       return newCards;
     });
   };

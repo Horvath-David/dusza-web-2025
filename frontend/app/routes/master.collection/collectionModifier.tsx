@@ -44,12 +44,18 @@ const CollectionModifier = () => {
   const AddCard = () => {
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
     const card: CardType = {
+      id:
+        collection[collection.length - 1] !== undefined
+          ? collection[collection.length - 1].id + 1
+          : 0,
       name: cardName,
       attack: cardAttack,
       health: cardHealth,
       type: cardElement,
       isBoss: false,
     };
+
+    console.log(collection[1]);
 
     setCollection([...collection, card]);
 
@@ -72,7 +78,11 @@ const CollectionModifier = () => {
   const Modify = () => {
     console.log(cardId);
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
+
+    // setCardId(collection[-1].id);
+
     const card: CardType = {
+      id: cardId,
       name: cardName,
       attack: cardAttack,
       health: cardHealth,
@@ -80,9 +90,16 @@ const CollectionModifier = () => {
       isBoss: false,
     };
 
+    console.log(card);
+
     modifyCard(cardId, card);
 
     console.log("jo");
+    setIsdialogOpen(false);
+  };
+
+  const deleteCard = () => {
+    setCollection(collection.filter((x) => x.id !== cardId));
     setIsdialogOpen(false);
   };
 
@@ -116,7 +133,7 @@ const CollectionModifier = () => {
                 <div
                   className="border-2 border-white rounded-2xl max-h-48 gap-2 p-3 flex flex-col items-center justify-center"
                   onClick={() => {
-                    setModify(idx);
+                    setModify(e.id);
                   }}
                 >
                   <h2 className="text-lg font-bold">{e.name}</h2>
@@ -227,7 +244,11 @@ const CollectionModifier = () => {
                             <Button type="submit">
                               <Pencil></Pencil>Módosítás
                             </Button>
-                            <Button variant={"destructive"}>
+                            <Button
+                              variant={"destructive"}
+                              type="button"
+                              onClick={deleteCard}
+                            >
                               <Trash></Trash>
                               Törlés
                             </Button>
