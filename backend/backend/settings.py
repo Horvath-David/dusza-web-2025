@@ -92,7 +92,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'api',
     'authenticate',
-    'world'
+    'world',
+    'card',
 ]
 
 MIDDLEWARE = [
