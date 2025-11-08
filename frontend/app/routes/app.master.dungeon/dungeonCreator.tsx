@@ -45,9 +45,12 @@ const DungeonCreator = () => {
   const [dungeonType, setDungeonType] = useState<DungeonTypeType>();
 
   const [isCardSelect, setIsCardSelect] = useState<boolean>(false);
+  const [isModifying, setIsModifying] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const [dungeonCollection, setDungeonCollection] = useState<CardType[]>([]);
+
+  const [dunId, setDunId] = useState<number>(0);
 
   const AddCardToDungeon = (id: number) => {
     setDungeonCollection((prev) => [...prev, collection[id]]);
@@ -87,10 +90,74 @@ const DungeonCreator = () => {
     toast.success("Sikeres kazamata törlés");
   };
 
+  const HandleOnModify = (id: number) => {
+    setIsModifying(true);
+
+    const dungeon = dungeons[id];
+    setDungeoName(dungeon.name);
+    setDungeonType(dungeon.type);
+
+    dungeon.cards.forEach((element) => {
+      setDungeonCollection((prev) => [
+        ...prev,
+        collection.filter((e) => e.id === element)[0],
+      ]);
+    });
+    setDunId(id);
+    setIsDialogOpen(true);
+  };
+
+  const ChangeDungeon = () => {
+    if (!dungeoName || !dungeonType) return;
+
+    const cards: number[] = [];
+    dungeonCollection.forEach((element) => {
+      cards.push(element.id);
+    });
+
+    const dungeon: DungeonType = {
+      id: dunId,
+      name: dungeoName,
+      type: dungeonType,
+      cards: cards,
+      world_id: 0,
+    };
+    const newDun = dungeons.map((x) => (x.id === dunId ? dungeon : x));
+    setDungeons(newDun);
+    setIsModifying(false);
+    toast.success("Sikeres módosítás");
+    setIsDialogOpen(false);
+  };
+
+  const BigCheck = () => {
+    if (dungeonType === undefined) return true;
+    if (dungeonType === "basic") {
+      if (dungeonCollection.length < 1) return true;
+    } else if (dungeonType === "small") {
+      if (dungeonCollection.length < 4) return true;
+    } else if (dungeonCollection.length < 6) return true;
+    return false;
+  };
+
+  const bigCheckBob = () => {
+    if (dungeonType === undefined) return false;
+    if (dungeonType === "basic") {
+      if (dungeonCollection.length !== 1) return false;
+    }
+    if (dungeonType === "small") {
+      if (dungeonCollection.length !== 4) return false;
+    }
+    if (dungeonType === "big") {
+      if (dungeonCollection.length !== 6) return false;
+    }
+
+    return true;
+  };
+
   useEffect(() => {
     setIsCardSelect(false);
-
     if (isDialogOpen) return;
+    setIsModifying(false);
     setDungeoName(undefined);
     setDungeonType(undefined);
     setDungeonCollection([]);
@@ -117,7 +184,11 @@ const DungeonCreator = () => {
                       <ItemDescription>{e.type}</ItemDescription>
                     </ItemContent>
                     <ItemActions>
-                      <Button>
+                      <Button
+                        onClick={() => {
+                          HandleOnModify(e.id);
+                        }}
+                      >
                         <Pencil></Pencil>
                       </Button>
                       <Button
@@ -147,7 +218,9 @@ const DungeonCreator = () => {
           </DialogTrigger>
           <DialogContent className="min-w-[60%] min-h-[60%]">
             <DialogTitle className="text-2xl font-bold ">
-              {isCardSelect ? "Gyűjteményed" : "Kazamata létrehozzása"}
+              {isCardSelect
+                ? "Gyűjteményed"
+                : `Kazamata ${isModifying ? "módosítása" : "létrehozzása"}`}
             </DialogTitle>
             {isCardSelect ? (
               <div className="justify-between flex flex-col">
@@ -192,7 +265,15 @@ const DungeonCreator = () => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    AddDungeon();
+                    if (!bigCheckBob()) {
+                      toast.error("Nem megfelelőek a kártyák!");
+                      return;
+                    }
+                    if (isModifying) {
+                      ChangeDungeon();
+                    } else {
+                      AddDungeon();
+                    }
                   }}
                 >
                   <FieldGroup>
@@ -246,7 +327,7 @@ const DungeonCreator = () => {
                             </div>
                           );
                         })}
-                        {dungeonCollection.length < 6 ? (
+                        {BigCheck() ? (
                           <div
                             className="border-2 border-white rounded-2xl flex justify-center h-20 items-center hover:bg-white hover:text-black"
                             onClick={() => {
@@ -260,10 +341,17 @@ const DungeonCreator = () => {
                         )}
                       </div>
                       <Field>
-                        <Button>
-                          <Plus></Plus>
-                          Létrehozzás
-                        </Button>
+                        {isModifying ? (
+                          <Button>
+                            <Pencil></Pencil>
+                            Módosítás
+                          </Button>
+                        ) : (
+                          <Button>
+                            <Plus></Plus>
+                            Létrehozzás
+                          </Button>
+                        )}
                       </Field>
                     </FieldSet>
                   </FieldGroup>
