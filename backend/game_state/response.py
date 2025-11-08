@@ -58,5 +58,7 @@ def get_game_state(request: WSGIRequest, state_id):
     return JsonResponse({
         "status": "Ok",
         "world_id": game_state.world.id,
-        "state": game_state.state
+        "state": game_state.state,
+        "created_at": game_state.created_at,
+        "last_updated_at": game_state.last_updated_at,
     }, status=200)

@@ -293,6 +293,8 @@ All starts with `/api`
 ```json
 {
     "world_id": "number",
-    "state": "json"
+    "state": "json",
+    "created_at": "ISO timestamp",
+    "last_updated_at": "ISO timestamp"
 }
 ```
