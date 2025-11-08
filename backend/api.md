@@ -1,3 +1,5 @@
+All starts with `/api`
+
 `/auth/`
 
 &nbsp;&nbsp;&nbsp;&nbsp;`/login` POST
@@ -70,4 +72,26 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;On success returns: same schema as in `/all`
 
+---
 
+`/card`
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/create/` POST
+
+&nbsp;&nbsp;&nbsp;&nbsp;Add new cards to a world
+
+```json
+{
+    "world_id": "string/number",
+    "cards": [
+        {
+            "name": "string",
+            "hp": "number",
+            "attack": "number",
+            "type": "fire|earth|water|air"
+        }
+    ]
+}
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns: a list of skipped card names in the `skipped` field as `string[]`
