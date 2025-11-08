@@ -130,6 +130,21 @@ All starts with `/api`
 }
 ```
 
+&nbsp;&nbsp;&nbsp;&nbsp;`/<card_id>/update` PATCH
+
+&nbsp;&nbsp;&nbsp;&nbsp;Update a card's fields
+
+&nbsp;&nbsp;&nbsp;&nbsp;All fields are optional
+
+```json
+{
+    "name": "string",
+    "hp": "number",
+    "attack": "number",
+    "type": "fire|earth|water|air"
+}
+```
+
 ---
 
 `/dungeon`
