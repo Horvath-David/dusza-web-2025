@@ -65,6 +65,8 @@ const CollectionModifier = () => {
                                             <Input id="card-health-input"
                                             min={1}
                                             type="number"
+                                            value={cardHealth}
+                                            onChange={(e)=>{setCardHealth(parseInt(e.target.value))}} 
                                             required
                                             ></Input>
                                         </Field>
