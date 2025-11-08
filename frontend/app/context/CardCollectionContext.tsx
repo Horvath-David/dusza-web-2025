@@ -27,11 +27,6 @@ const CardCollectionContextProvider = (props: { children: ReactNode }) => {
   const [collection, setCollection] = useState<CardType[]>([]);
 
   const modifyCard = (id: number, card: CardType) => {
-    // setCollection((prev) => {
-    //   const newCards = [...prev];
-    //   newCards[id] = card;
-    //   return newCards;
-    // });
     setCollection((prevCard) => {
       const newCards = prevCard.map((x) => (x.id === id ? card : x));
       return newCards;
