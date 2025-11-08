@@ -29,7 +29,7 @@ def login(request: WSGIRequest):
         return JsonResponse({
             "status": "Error",
             "error": "Invalid username or password"
-        }, status=403)
+        }, status=401)
 
 
 @require_http_methods(["GET"])
@@ -40,7 +40,7 @@ def logout(request: WSGIRequest):
 
 
 @require_http_methods(["POST"])
-def register(request: WSGIRequest, invite_code):
+def register(request: WSGIRequest):
     try:
         body = json.loads(request.body)
     except JSONDecodeError:
