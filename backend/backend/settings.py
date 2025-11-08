@@ -74,7 +74,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1",
     "http://127.0.0.1:3000",
     "http://localhost:3000",
+<<<<<<< HEAD
     "http://20.79.42.122",
+=======
+    "http://20.79.42.122"
+>>>>>>> 4c7e475f0f6ffa5b5b153c4be0b250c459f96da7
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -91,7 +95,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'api',
-    'authenticate'
+    'authenticate',
+    'world',
+    'card',
 ]
 
 MIDDLEWARE = [
