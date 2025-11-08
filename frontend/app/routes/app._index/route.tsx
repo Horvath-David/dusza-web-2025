@@ -9,9 +9,9 @@ export default function AppIndex() {
   return (
     <div className="p-4 max-w-4xl w-full h-full mx-auto flex flex-col gap-8">
       <div className="w-full h-full flex-1 flex items-end justify-center text-center">
-        <span className="font-medium py-2 text-5xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
+        <h1 className="font-medium py-2 text-5xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
           Üdv, {user.display_name}!
-        </span>
+        </h1>
       </div>
       <div className="w-full h-full flex-2 flex flex-row gap-8">
         <Link
