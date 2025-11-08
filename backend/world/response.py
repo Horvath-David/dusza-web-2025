@@ -110,6 +110,6 @@ def get_dungeon_per_world(request: WSGIRequest, world_id):
                 "hp": x.hp,
                 "attack": x.attack,
                 "type": x.type,
-            } for x in i.cards.all()],
+            } for x in i.cards.all().order_by("order")],
         } for i in dungeons]
     })

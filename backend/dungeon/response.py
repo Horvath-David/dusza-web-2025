@@ -66,7 +66,12 @@ def create_dungeon(request: WSGIRequest):
                 "error": "Nincsen vezérkártya vagy nem az utolsó helyen van"
             }, status=400)
 
-    card_objs = [card for card in Card.objects.filter(id__in=card_ids, world=world_obj)]
+    card_objs = []
+    for idx, card_id in enumerate(card_ids):
+        card_obj = Card.objects.get(id=card_id)
+        card_obj.order = idx
+        card_obj.save()
+        card_objs.append(card_obj)
 
     dungeon_obj = Dungeon.objects.create(
         name=body.get("name"),
@@ -131,7 +136,12 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
                     "error": "Nincsen vezérkártya vagy nem az utolsó helyen van"
                 }, status=400)
 
-        card_objs = [card for card in Card.objects.filter(id__in=card_ids, world=dungeon_obj.world)]
+        card_objs = []
+        for idx, card_id in enumerate(card_ids):
+            card_obj = Card.objects.get(id=card_id)
+            card_obj.order = idx
+            card_obj.save()
+            card_objs.append(card_obj)
 
         dungeon_obj.cards.clear()
         dungeon_obj.cards.add(*card_objs)
@@ -166,6 +176,6 @@ def get_dungeon_by_id(request: WSGIRequest, dungeon_id):
                 "hp": i.hp,
                 "attack": i.attack,
                 "type": i.type,
-            } for i in dungeon_obj.cards.all()]
+            } for i in dungeon_obj.cards.all().order_by("order")]
         }
     })
