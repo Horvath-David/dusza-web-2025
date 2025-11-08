@@ -30,7 +30,7 @@ class World(models.Model):
         max_length=255,
         unique=True
     )
-    owner = ForeignKey(User, on_delete=models.CASCADE)
+    owner = ForeignKey(User, on_delete=models.SET_NULL, null=True)
     is_public = models.BooleanField(default=False)
     is_playable = models.BooleanField(default=False)
 
@@ -45,7 +45,7 @@ class Card(models.Model):
     type = models.CharField(choices=CARD_TYPES, max_length=50)
     world = ForeignKey(World, on_delete=models.CASCADE)
     is_boss = models.BooleanField(default=False)
-    owner = ForeignKey(User, on_delete=models.CASCADE)
+    owner = ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
@@ -56,7 +56,7 @@ class Dungeon(models.Model):
     world = ForeignKey(World, on_delete=models.CASCADE)
     type = models.CharField(choices=DUNGEON_TYPES, max_length=50)
     cards = models.ManyToManyField(Card)
-    owner = ForeignKey(User, on_delete=models.CASCADE)
+    owner = ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name

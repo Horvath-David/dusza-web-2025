@@ -5,7 +5,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
-from api.models import World, UserData
+from api.models import World, UserData, Card
 from authenticate import wrappers
 # Create your views here.
 
@@ -31,6 +31,7 @@ def create_world(request: WSGIRequest):
     }, status=200)
 
 
+@wrappers.login_required()
 @require_http_methods(["GET"])
 def get_worlds(request: WSGIRequest):
     worlds = World.objects.filter(is_public=True)
@@ -54,8 +55,33 @@ def get_my_worlds(request: WSGIRequest):
         "worlds": [{
             "id": i.id,
             "name": i.name,
-            "owner": UserData.objects.get(user=request.user).display_name,
+            "owner": UserData.objects.get(user=i.owner).display_name if i.owner else "Törölt felhasználó",
             "is_public": i.is_public,
             "is_playable": i.is_playable
         } for i in worlds]
+    })
+
+
+@wrappers.login_required()
+@require_http_methods(["GET"])
+def get_cards_per_world(request: WSGIRequest, world_id):
+    if not World.objects.filter(id=world_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a világ nem létezik"
+        }, status=404)
+
+    world_obj = World.objects.get(id=world_id)
+    cards = Card.objects.filter(world=world_obj)
+
+    return JsonResponse({
+        "status": "Ok",
+        "cards": [{
+            "id": i.id,
+            "name": i.name,
+            "hp": i.hp,
+            "attack": i.attack,
+            "type": i.type,
+            "is_boss": i.is_boss
+        } for i in cards]
     })

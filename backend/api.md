@@ -1,3 +1,5 @@
+All starts with `/api`
+
 `/auth/`
 
 &nbsp;&nbsp;&nbsp;&nbsp;`/login` POST
@@ -70,4 +72,60 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;On success returns: same schema as in `/all`
 
+&nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/cards` GET
 
+&nbsp;&nbsp;&nbsp;&nbsp;Returns all cards associated with a world
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
+
+```json
+{
+    "cards": [
+        {
+            "id": "number",
+            "name": "string",
+            "hp": "number",
+            "attack": "number",
+            "type": "fire|earth|water|air",
+            "is_boss": "boolean"
+        }
+    ]
+}
+```
+
+
+
+---
+
+`/card`
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/create/` POST
+
+&nbsp;&nbsp;&nbsp;&nbsp;Add new cards to a world
+
+```json
+{
+    "world_id": "string/number",
+    "cards": [
+        {
+            "name": "string",
+            "hp": "number",
+            "attack": "number",
+            "type": "fire|earth|water|air"
+        }
+    ]
+}
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
+
+```json
+{
+    "skipped": [
+        {
+            "name": "string", // The skipped card's name
+            "reason": "string" //The reason for skipping the card
+        }
+    ]
+}
+```

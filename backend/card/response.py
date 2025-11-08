@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
 from authenticate import wrappers
-from api.models import Card, World
+from api.models import Card, World, CARD_TYPES
 
 
 # Create your views here.
@@ -45,8 +45,19 @@ def create_card(request: WSGIRequest):
 
     for i in to_create:
         if Card.objects.filter(name=i.get("name"), world=world).exists():
-            skipped_cards.append(i.get("name"))
+            skipped_cards.append({
+                "name": i.get("name"),
+                "reason": "A kártya már létezik ebben a világban"
+            })
             continue
+
+        if i.get("type") not in dict(CARD_TYPES).keys():
+            skipped_cards.append({
+                "name": i.get("name"),
+                "reason": "Helytelen kártyatípus"
+            })
+            continue
+
         Card.objects.create(
             name=i.get("name"),
             hp=i.get("hp"),
