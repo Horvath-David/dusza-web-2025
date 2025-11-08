@@ -79,5 +79,5 @@ def create_dungeon(request: WSGIRequest):
 
     return JsonResponse({
         "status": "Ok",
-        "dungeon_id": dungeon_obj.id
+        "id": dungeon_obj.id
     }, status=200)
