@@ -93,7 +93,26 @@ All starts with `/api`
 }
 ```
 
+&nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/dungeons` GET
 
+&nbsp;&nbsp;&nbsp;&nbsp;Returns all cards associated with a world
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
+
+```json
+{
+    "dungeons": [{
+        "name": "string",
+        "type": "basic|small|big",
+        "cards": [{
+            "name": "string",
+            "hp": "number",
+            "attack": "number",
+            "type": "fire|earth|water|air",
+        }]
+    }]
+}
+```
 
 ---
 
@@ -127,5 +146,46 @@ All starts with `/api`
             "reason": "string" //The reason for skipping the card
         }
     ]
+}
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/<card_id>/update` PATCH
+
+&nbsp;&nbsp;&nbsp;&nbsp;Update a card's fields
+
+&nbsp;&nbsp;&nbsp;&nbsp;All fields are optional
+
+```json
+{
+    "name": "string",
+    "hp": "number",
+    "attack": "number",
+    "type": "fire|earth|water|air"
+}
+```
+
+---
+
+`/dungeon`
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/create` POST
+
+&nbsp;&nbsp;&nbsp;&nbsp;Create a dungeon, assign it to a world and assign cards to it
+
+```json
+{
+    "name": "string",
+    "cards": "number[]", // a list of cards' ids to be assigned to this dungeon
+    "type": "basic|small|big",
+    "world_id": "number"
+}
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
+
+```json
+{
+    "status": "Ok",
+    "id": "number" // the id of the newly created dungeon
 }
 ```
