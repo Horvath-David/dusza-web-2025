@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     'authenticate',
     'world',
     'card',
+    'dungeon'
 ]
 
 MIDDLEWARE = [
