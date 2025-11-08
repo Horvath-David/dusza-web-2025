@@ -1,4 +1,8 @@
-import { redirect } from "react-router";
+import { Outlet, redirect } from "react-router";
+import { Header } from "~/components/header";
+import { UserContextProvider } from "~/context/UserContext";
+import type { UserMe } from "~/models";
+import type { Route } from "./+types/route";
 
 export async function clientLoader() {
   const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
@@ -9,8 +13,20 @@ export async function clientLoader() {
   if (res.status !== 200) {
     return redirect("/");
   }
+
+  const json = await res.json();
+  return json.user as UserMe;
 }
 
-export default function App() {
-  return <div>App</div>;
+export default function App({ loaderData }: Route.ComponentProps) {
+  return (
+    <UserContextProvider initial={loaderData}>
+      <div className="w-screen h-screen overflow-hidden flex flex-col">
+        <Header />
+        <div className="flex-1 w-full h-full overflow-x-hidden overflow-y-auto">
+          <Outlet />
+        </div>
+      </div>
+    </UserContextProvider>
+  );
 }
