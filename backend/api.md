@@ -231,3 +231,27 @@ All starts with `/api`
     "type": "basic|small|big"
 }
 ```
+
+
+---
+
+&nbsp;&nbsp;&nbsp;&nbsp;`get/<dungeon_id>` GET
+
+&nbsp;&nbsp;&nbsp;&nbsp;Get a dungeon and its cards by id
+
+```json
+{
+    "dungeon": {
+        "id": "number",
+        "name": "string",
+        "type": "basic|small|big",
+        "cards": [{
+            "id": "number",
+            "name": "string",
+            "hp": "number",
+            "attack": "number",
+            "type": "fire|earth|water|air"
+        }]
+    }
+}
+```
