@@ -33,7 +33,7 @@ class World(models.Model):
 
 
 class Card(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=16)
     hp = models.IntegerField()
     attack = models.IntegerField()
     type = models.CharField(choices=CARD_TYPES, max_length=50)
