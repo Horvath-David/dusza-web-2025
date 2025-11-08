@@ -1,5 +1,5 @@
-import { ArrowLeft, Plus } from "lucide-react";
-import { useContext, useState } from "react";
+import { ArrowLeft, Pencil, Plus, Trash } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
@@ -27,7 +27,9 @@ import {
 } from "~/context/CardCollectionContext";
 
 const CollectionModifier = () => {
-  const { collection, setCollection } = useContext(CardCollectionContext);
+  const { collection, setCollection, modifyCard } = useContext(
+    CardCollectionContext
+  );
 
   const [cardElement, setCardElement] = useState<ElementsType>();
   const [cardName, setCardName] = useState<string>();
@@ -35,10 +37,17 @@ const CollectionModifier = () => {
   const [cardHealth, setCardHealth] = useState<number>();
 
   const [isDialogOpen, setIsdialogOpen] = useState<boolean>(false);
+  const [isModify, setIsModify] = useState<boolean>(false);
+
+  const [cardId, setCardId] = useState<number>(0);
 
   const AddCard = () => {
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
     const card: CardType = {
+      id:
+        collection[collection.length - 1] !== undefined
+          ? collection[collection.length - 1].id + 1
+          : 0,
       name: cardName,
       attack: cardAttack,
       health: cardHealth,
@@ -46,15 +55,63 @@ const CollectionModifier = () => {
       isBoss: false,
     };
 
+    console.log(collection[1]);
+
     setCollection([...collection, card]);
+
+    setIsdialogOpen(false);
+  };
+
+  const setModify = (id: number) => {
+    setIsModify(true);
+
+    const card = collection[id];
+    setCardId(id);
+
+    setCardElement(card.type);
+    setCardHealth(card.health);
+    setCardAttack(card.attack);
+    setCardName(card.name);
+    setIsdialogOpen(true);
+  };
+
+  const Modify = () => {
+    console.log(cardId);
+    if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
+
+    // setCardId(collection[-1].id);
+
+    const card: CardType = {
+      id: cardId,
+      name: cardName,
+      attack: cardAttack,
+      health: cardHealth,
+      type: cardElement,
+      isBoss: false,
+    };
+
+    console.log(card);
+
+    modifyCard(cardId, card);
+
+    console.log("jo");
+    setIsdialogOpen(false);
+  };
+
+  const deleteCard = () => {
+    setCollection(collection.filter((x) => x.id !== cardId));
+    setIsdialogOpen(false);
+  };
+
+  useEffect(() => {
+    if (isDialogOpen) return;
 
     setCardElement(undefined);
     setCardHealth(undefined);
     setCardAttack(undefined);
     setCardName(undefined);
-
-    setIsdialogOpen(false);
-  };
+    setIsModify(false);
+  }, [isDialogOpen]);
 
   return (
     <main className="p-5">
@@ -71,9 +128,14 @@ const CollectionModifier = () => {
         <div className="flex flex-col gap-2">
           <h2 className="text-xl">Gyűjteményed</h2>
           <div className="w-[50em] h-[30em] border-2 border-white rounded-2xl grid grid-cols-4 p-7 gap-4 overflow-auto">
-            {collection.map((e) => {
+            {collection.map((e, idx) => {
               return (
-                <div className="border-2 border-white rounded-2xl max-h-48 gap-2 p-3 flex flex-col items-center justify-center">
+                <div
+                  className="border-2 border-white rounded-2xl max-h-48 gap-2 p-3 flex flex-col items-center justify-center"
+                  onClick={() => {
+                    setModify(e.id);
+                  }}
+                >
                   <h2 className="text-lg font-bold">{e.name}</h2>
                   <p className="text-md font-bold">
                     {e.attack}/{e.health}
@@ -93,13 +155,18 @@ const CollectionModifier = () => {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold">
-                  Új kártya hozzáadása
+                  {isModify ? "Kártya módosítása" : "Új kártya hozzáadása"}
                 </DialogTitle>
               </DialogHeader>
               <div>
                 <form
                   onSubmit={(e) => {
-                    (e.preventDefault(), AddCard());
+                    e.preventDefault();
+                    if (isModify) {
+                      Modify();
+                    } else {
+                      AddCard();
+                    }
                   }}
                 >
                   <FieldGroup>
@@ -172,7 +239,23 @@ const CollectionModifier = () => {
                         </Select>
                       </Field>
                       <Field>
-                        <Button type="submit">Létrehozzás</Button>
+                        {isModify ? (
+                          <div className="flex gap-3">
+                            <Button type="submit">
+                              <Pencil></Pencil>Módosítás
+                            </Button>
+                            <Button
+                              variant={"destructive"}
+                              type="button"
+                              onClick={deleteCard}
+                            >
+                              <Trash></Trash>
+                              Törlés
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button type="submit">Létrehozzás</Button>
+                        )}
                       </Field>
                     </FieldSet>
                   </FieldGroup>
