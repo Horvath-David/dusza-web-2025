@@ -102,13 +102,15 @@ All starts with `/api`
 ```json
 {
     "dungeons": [{
+        "id": "number",
         "name": "string",
         "type": "basic|small|big",
         "cards": [{
+            "id": "number",
             "name": "string",
             "hp": "number",
             "attack": "number",
-            "type": "fire|earth|water|air",
+            "type": "fire|earth|water|air"
         }]
     }]
 }

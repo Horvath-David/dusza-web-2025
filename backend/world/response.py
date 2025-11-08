@@ -101,9 +101,11 @@ def get_dungeon_per_world(request: WSGIRequest, world_id):
     return JsonResponse({
         "status": "Ok",
         "dungeons": [{
+            "id": i.id,
             "name": i.name,
             "type": i.type,
             "cards": [{
+                "id": x.id,
                 "name": x.name,
                 "hp": x.hp,
                 "attack": x.attack,
