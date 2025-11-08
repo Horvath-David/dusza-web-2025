@@ -1,4 +1,12 @@
-import { ArrowLeft, Pencil, Plus, Trash } from "lucide-react";
+import {
+  ArrowLeft,
+  CircleFadingArrowUp,
+  HeartPlus,
+  Pencil,
+  Plus,
+  Swords,
+  Trash,
+} from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -38,22 +46,38 @@ const CollectionModifier = () => {
   const [cardHealth, setCardHealth] = useState<number>();
 
   const [isDialogOpen, setIsdialogOpen] = useState<boolean>(false);
+  const [isBossCard, setIssBossCard] = useState<boolean>(false);
   const [isModify, setIsModify] = useState<boolean>(false);
+
+  const [doubleDmg, setDoubleDmg] = useState<boolean>();
 
   const [cardId, setCardId] = useState<number>(0);
 
   const AddCard = () => {
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
+
+    let attack = cardAttack;
+    let health = cardHealth;
+
+    if (isBossCard) {
+      console.log("jp");
+      if (doubleDmg) {
+        attack = attack * 2;
+      } else {
+        health = health * 2;
+      }
+    }
+
     const card: CardType = {
       id:
         collection[collection.length - 1] !== undefined
           ? collection[collection.length - 1].id + 1
           : 0,
       name: cardName,
-      attack: cardAttack,
-      health: cardHealth,
+      attack: attack,
+      health: health,
       type: cardElement,
-      isBoss: false,
+      isBoss: isBossCard,
     };
 
     console.log(collection[1]);
@@ -109,8 +133,28 @@ const CollectionModifier = () => {
     setIsdialogOpen(false);
   };
 
+  const checkForErrors = () => {
+    if (isBossCard) {
+      if (doubleDmg === undefined) {
+        toast.error("Válasszon egy erősítés fajtát!");
+        return true;
+      }
+    }
+    const names = collection.map((x) => x.name);
+
+    if (!cardName) return;
+    if (names.includes(cardName)) {
+      toast.error("A név már szerepel a kártyák között!");
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     if (isDialogOpen) return;
+
+    setIssBossCard(false);
+    setDoubleDmg(undefined);
 
     setCardElement(undefined);
     setCardHealth(undefined);
@@ -137,7 +181,7 @@ const CollectionModifier = () => {
             {collection.map((e, idx) => {
               return (
                 <div
-                  className="border-2 border-white rounded-2xl max-h-48 gap-2 p-3 flex flex-col items-center justify-center"
+                  className="border-2 border-white rounded-2xl max-h-48 gap-2 p-3 flex flex-col items-center justify-center hover:bg-white hover:text-black transition duration-1000"
                   onClick={() => {
                     setModify(e.id);
                   }}
@@ -147,6 +191,7 @@ const CollectionModifier = () => {
                     {e.attack}/{e.health}
                   </p>
                   <p>{e.type}</p>
+                  <p>{e.isBoss && "(vezér)"}</p>
                 </div>
               );
             })}
@@ -168,6 +213,7 @@ const CollectionModifier = () => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
+                    if (checkForErrors()) return;
                     if (isModify) {
                       Modify();
                     } else {
@@ -191,64 +237,110 @@ const CollectionModifier = () => {
                           }}
                         ></Input>
                       </Field>
+                      {isBossCard ? (
+                        <div className="flex min-w-max gap-3 justify-between">
+                          <Button
+                            type="button"
+                            className="flex-1"
+                            onClick={() => {
+                              setDoubleDmg(false);
+                            }}
+                            variant={
+                              doubleDmg === true ? "secondary" : "default"
+                            }
+                          >
+                            <HeartPlus></HeartPlus>
+                            Életerő duplázása
+                          </Button>
+                          <Button
+                            type="button"
+                            className="flex-1"
+                            onClick={() => {
+                              setDoubleDmg(true);
+                            }}
+                            variant={
+                              doubleDmg === false && doubleDmg !== undefined
+                                ? "secondary"
+                                : "default"
+                            }
+                          >
+                            <Swords></Swords>
+                            Sebzés duplázása
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <Field>
+                            <FieldLabel htmlFor="card-attack-input">
+                              Kártya sebzése:
+                            </FieldLabel>
+                            <Input
+                              id="card-attack-input"
+                              min={1}
+                              type="number"
+                              value={cardAttack}
+                              onChange={(e) => {
+                                setCardAttack(parseInt(e.target.value));
+                              }}
+                              required
+                            ></Input>
+                          </Field>
+                          <Field>
+                            <FieldLabel htmlFor="card-health-input">
+                              Kártya életereje:
+                            </FieldLabel>
+                            <Input
+                              id="card-health-input"
+                              min={1}
+                              type="number"
+                              value={cardHealth}
+                              onChange={(e) => {
+                                setCardHealth(parseInt(e.target.value));
+                              }}
+                              required
+                            ></Input>
+                          </Field>
+                          <Field>
+                            <FieldLabel>Kártya eleme:</FieldLabel>
+                            <Select
+                              value={cardElement}
+                              onValueChange={(e) => {
+                                setCardElement(e as ElementsType);
+                              }}
+                              required
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Válassz egy elemet"></SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Elemek</SelectLabel>
+                                  <SelectItem value="fire">Tűz</SelectItem>
+                                  <SelectItem value="water">Víz</SelectItem>
+                                  <SelectItem value="earth">Föld</SelectItem>
+                                  <SelectItem value="wind">Szél</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </Field>
+                        </>
+                      )}
                       <Field>
-                        <FieldLabel htmlFor="card-attack-input">
-                          Kártya sebzése:
-                        </FieldLabel>
-                        <Input
-                          id="card-attack-input"
-                          min={1}
-                          type="number"
-                          value={cardAttack}
-                          onChange={(e) => {
-                            setCardAttack(parseInt(e.target.value));
-                          }}
-                          required
-                        ></Input>
-                      </Field>
-                      <Field>
-                        <FieldLabel htmlFor="card-health-input">
-                          Kártya életereje:
-                        </FieldLabel>
-                        <Input
-                          id="card-health-input"
-                          min={1}
-                          type="number"
-                          value={cardHealth}
-                          onChange={(e) => {
-                            setCardHealth(parseInt(e.target.value));
-                          }}
-                          required
-                        ></Input>
-                      </Field>
-                      <Field>
-                        <FieldLabel>Kártya eleme:</FieldLabel>
-                        <Select
-                          value={cardElement}
-                          onValueChange={(e) => {
-                            setCardElement(e as ElementsType);
-                          }}
-                          required
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Válassz egy elemet"></SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Elemek</SelectLabel>
-                              <SelectItem value="fire">Tűz</SelectItem>
-                              <SelectItem value="water">Víz</SelectItem>
-                              <SelectItem value="earth">Föld</SelectItem>
-                              <SelectItem value="wind">Szél</SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </Field>
-                      <Field>
-                        {isModify ? (
+                        {isModify && !isBossCard ? (
                           <div className="flex gap-3">
                             <Button type="submit">
                               <Pencil></Pencil>Módosítás
+                            </Button>
+                            <Button
+                              variant={"secondary"}
+                              type="button"
+                              onClick={() => {
+                                setIssBossCard(true);
+                                setIsModify(false);
+                              }}
+                            >
+                              <CircleFadingArrowUp></CircleFadingArrowUp>
+                              Vezér készítés
                             </Button>
                             <Button
                               variant={"destructive"}
@@ -260,7 +352,10 @@ const CollectionModifier = () => {
                             </Button>
                           </div>
                         ) : (
-                          <Button type="submit">Létrehozzás</Button>
+                          <Button type="submit">
+                            <Plus></Plus>
+                            Létrehozzás
+                          </Button>
                         )}
                       </Field>
                     </FieldSet>
