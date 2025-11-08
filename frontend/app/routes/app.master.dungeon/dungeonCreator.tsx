@@ -154,6 +154,16 @@ const DungeonCreator = () => {
     return true;
   };
 
+  const lilCheck = () => {
+    if (dungeonCollection.length === 3 && dungeonType === "small") {
+      return true;
+    }
+    if (dungeonCollection.length === 5 && dungeonType === "big") {
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     setIsCardSelect(false);
     if (isDialogOpen) return;
@@ -224,15 +234,22 @@ const DungeonCreator = () => {
             </DialogTitle>
             {isCardSelect ? (
               <div className="justify-between flex flex-col">
-                {collection.filter((x) => !dungeonCollection.includes(x))
-                  .length < 1 ? (
+                {collection.filter(
+                  (x) =>
+                    !dungeonCollection.includes(x) &&
+                    (lilCheck() ? x.isBoss : !x.isBoss)
+                ).length < 1 ? (
                   <h1 className="text-xl">
                     Nincs elég kártya a gyűjteményedben!
                   </h1>
                 ) : (
                   <section className="grid grid-cols-4 gap-3 overflow-auto">
                     {collection
-                      .filter((x) => !dungeonCollection.includes(x))
+                      .filter(
+                        (x) =>
+                          !dungeonCollection.includes(x) &&
+                          (lilCheck() ? x.isBoss : !x.isBoss)
+                      )
                       .map((e) => {
                         return (
                           <div
@@ -246,6 +263,7 @@ const DungeonCreator = () => {
                               {e.attack}/{e.health}
                             </p>
                             <p>{e.type}</p>
+                            <p>{e.isBoss && "(vezér)"}</p>
                           </div>
                         );
                       })}

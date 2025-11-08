@@ -1,8 +1,10 @@
 import {
   ArrowLeft,
   CircleFadingArrowUp,
+  HeartPlus,
   Pencil,
   Plus,
+  Swords,
   Trash,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
@@ -247,6 +249,7 @@ const CollectionModifier = () => {
                               doubleDmg === true ? "secondary" : "default"
                             }
                           >
+                            <HeartPlus></HeartPlus>
                             Életerő duplázása
                           </Button>
                           <Button
@@ -261,6 +264,7 @@ const CollectionModifier = () => {
                                 : "default"
                             }
                           >
+                            <Swords></Swords>
                             Sebzés duplázása
                           </Button>
                         </div>
