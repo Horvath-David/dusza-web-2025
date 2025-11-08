@@ -177,7 +177,8 @@ All starts with `/api`
     "name": "string",
     "hp": "number",
     "attack": "number",
-    "type": "fire|earth|water|air"
+    "type": "fire|earth|water|air",
+    "is_boss": "boolean"
 }
 ```
 
