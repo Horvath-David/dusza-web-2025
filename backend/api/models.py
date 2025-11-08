@@ -9,6 +9,12 @@ CARD_TYPES = (
     ('air', 'Levegő'),
 )
 
+DUNGEON_TYPES = (
+    ('basic', 'Egyszerű talalálkozás'),
+    ('small', 'Kis kazamata'),
+    ('big', 'Nagy kazamata'),
+)
+
 
 # Create your models here.
 class UserData(models.Model):
@@ -38,7 +44,16 @@ class Card(models.Model):
     attack = models.IntegerField()
     type = models.CharField(choices=CARD_TYPES, max_length=50)
     world = ForeignKey(World, on_delete=models.CASCADE)
+    is_boss = models.BooleanField(default=False)
     owner = ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
+
+
+class Dungeon(models.Model):
+    name = models.CharField(max_length=255)
+    world = ForeignKey(World, on_delete=models.CASCADE)
+    type = models.CharField(choices=DUNGEON_TYPES, max_length=50)
+    cards = models.ManyToManyField(Card)
+    owner = ForeignKey(User, on_delete=models.CASCADE)
