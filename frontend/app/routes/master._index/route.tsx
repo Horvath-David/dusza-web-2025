@@ -1,5 +1,5 @@
 import MasterGameField from "./masterGameField";
 
-export default function Master() {
+export default function MasterIndex() {
   return <MasterGameField />
 }
