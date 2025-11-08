@@ -32,6 +32,7 @@ All starts with `/api`
     "passwords": "string"
 }
 ```
+
 ---
 
 ---
@@ -47,10 +48,12 @@ All starts with `/api`
 ```
 
 &nbsp;&nbsp;&nbsp;&nbsp;On success returns:
+
 ```json
 {
     "status": "Ok",
-    "id": "[number]" // the newly created world's id
+    "id": "[number]"
+    // the newly created world's id
 }
 ```
 
@@ -63,14 +66,20 @@ All starts with `/api`
 &nbsp;&nbsp;&nbsp;&nbsp;On success returns:
 
 ```json
-[
-    {
-        "id": "number",
-        "name": "string",
-        "owner": "string", // the owner's display name
-        "is_playable": "bool" // true if the world can be played (potentially unused)
-    }
-]
+{
+    "worlds": [
+        {
+            "id": "number",
+            "name": "string",
+            "owner": "string",
+            // the owner's display name
+            "is_playable": "bool"
+            // true if the world can be played (potentially unused)
+            "dungeons": "number",
+            "cards": "number"
+        }
+    ]
+}
 ```
 
 &nbsp;&nbsp;&nbsp;&nbsp;`/my` GET
@@ -112,18 +121,22 @@ All starts with `/api`
 
 ```json
 {
-    "dungeons": [{
-        "id": "number",
-        "name": "string",
-        "type": "basic|small|big",
-        "cards": [{
+    "dungeons": [
+        {
             "id": "number",
             "name": "string",
-            "hp": "number",
-            "attack": "number",
-            "type": "fire|earth|water|air"
-        }]
-    }]
+            "type": "basic|small|big",
+            "cards": [
+                {
+                    "id": "number",
+                    "name": "string",
+                    "hp": "number",
+                    "attack": "number",
+                    "type": "fire|earth|water|air"
+                }
+            ]
+        }
+    ]
 }
 ```
 
@@ -157,8 +170,10 @@ All starts with `/api`
 {
     "skipped": [
         {
-            "name": "string", // The skipped card's name
-            "reason": "string" //The reason for skipping the card
+            "name": "string",
+            // The skipped card's name
+            "reason": "string"
+            //The reason for skipping the card
         }
     ]
 }
@@ -201,7 +216,8 @@ All starts with `/api`
 ```json
 {
     "name": "string",
-    "cards": "number[]", // a list of cards' ids to be assigned to this dungeon
+    "cards": "number[]",
+    // a list of cards' ids to be assigned to this dungeon
     "type": "basic|small|big",
     "world_id": "number"
 }
@@ -212,7 +228,8 @@ All starts with `/api`
 ```json
 {
     "status": "Ok",
-    "id": "number" // the id of the newly created dungeon
+    "id": "number"
+    // the id of the newly created dungeon
 }
 ```
 
@@ -227,11 +244,11 @@ All starts with `/api`
 ```json
 {
     "name": "string",
-    "cards": "number[]", // a list of cards' ids to be assigned to this dungeon
+    "cards": "number[]",
+    // a list of cards' ids to be assigned to this dungeon
     "type": "basic|small|big"
 }
 ```
-
 
 ---
 
@@ -245,13 +262,15 @@ All starts with `/api`
         "id": "number",
         "name": "string",
         "type": "basic|small|big",
-        "cards": [{
-            "id": "number",
-            "name": "string",
-            "hp": "number",
-            "attack": "number",
-            "type": "fire|earth|water|air"
-        }]
+        "cards": [
+            {
+                "id": "number",
+                "name": "string",
+                "hp": "number",
+                "attack": "number",
+                "type": "fire|earth|water|air"
+            }
+        ]
     }
 }
 ```
@@ -268,9 +287,12 @@ All starts with `/api`
 
 ```json
 {
-    "id": "number", // optional, overwritten if exists, created if doesn't exist
-    "world_id": "number", // which world should be associated with the save. frontend use only
-    "state": "json" // the game state itself
+    "id": "number",
+    // optional, overwritten if exists, created if doesn't exist
+    "world_id": "number",
+    // which world should be associated with the save. frontend use only
+    "state": "json"
+    // the game state itself
 }
 ```
 
@@ -278,7 +300,8 @@ All starts with `/api`
 
 ```json
 {
-    "id": "number" // the newly created object's id
+    "id": "number"
+    // the newly created object's id
 }
 ```
 
