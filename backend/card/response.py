@@ -47,7 +47,7 @@ def create_card(request: WSGIRequest):
         if Card.objects.filter(name=i.get("name"), world=world).exists():
             skipped_cards.append({
                 "name": i.get("name"),
-                "reason": "A kártya nem létezik ebben a világban"
+                "reason": "A kártya már létezik ebben a világban"
             })
             continue
 
