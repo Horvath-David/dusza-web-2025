@@ -1,6 +1,7 @@
 import { ArrowLeft, Pencil, Plus, Trash } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -59,6 +60,8 @@ const CollectionModifier = () => {
 
     setCollection([...collection, card]);
 
+    toast.success("Sikeressen létrehoztad a kártyát!");
+
     setIsdialogOpen(false);
   };
 
@@ -94,12 +97,15 @@ const CollectionModifier = () => {
 
     modifyCard(cardId, card);
 
-    console.log("jo");
+    toast.success("Sikeressen módosítottad a kártyát!");
+
     setIsdialogOpen(false);
   };
 
   const deleteCard = () => {
     setCollection(collection.filter((x) => x.id !== cardId));
+    toast.success("Sikeressen kitörölted a kártyát!");
+
     setIsdialogOpen(false);
   };
 
@@ -115,7 +121,7 @@ const CollectionModifier = () => {
 
   return (
     <main className="p-5">
-      <Link to={"/master"}>
+      <Link to={"/app/master"}>
         <Button className="absolute">
           <ArrowLeft></ArrowLeft>
           Vissza

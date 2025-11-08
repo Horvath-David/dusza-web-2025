@@ -9,7 +9,7 @@ const MasterGameField = () => {
       </Link>
 
       <Link to={"dungeon"}>
-        <Button>Hozzlétre kazamatákat</Button>
+        <Button>Hozz létre kazamatákat</Button>
       </Link>
     </main>
   );
