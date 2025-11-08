@@ -215,3 +215,19 @@ All starts with `/api`
     "id": "number" // the id of the newly created dungeon
 }
 ```
+
+---
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/<dungeon_id>/update` POST
+
+&nbsp;&nbsp;&nbsp;&nbsp;Create a dungeon, assign it to a world and assign cards to it
+
+&nbsp;&nbsp;&nbsp;&nbsp;All fields are optional
+
+```json
+{
+    "name": "string",
+    "cards": "number[]", // a list of cards' ids to be assigned to this dungeon
+    "type": "basic|small|big"
+}
+```
