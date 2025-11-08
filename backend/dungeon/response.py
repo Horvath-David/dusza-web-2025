@@ -46,6 +46,12 @@ def create_dungeon(request: WSGIRequest):
 
     card_ids = body.get("cards")
 
+    if list(set(card_ids)) != card_ids:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Egy kártya csak egyser szerepelhet egy kazamatában"
+        }, status=400)
+
     for i in card_ids:
         if not Card.objects.filter(id=i, world=world_obj).exists():
             return JsonResponse({
@@ -115,6 +121,12 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
         dungeon_obj.type = body.get("type")
     if body.get("cards"):
         card_ids = body.get("cards")
+
+        if list(set(card_ids)) != card_ids:
+            return JsonResponse({
+                "status": "Error",
+                "error": "Egy kártya csak egyser szerepelhet egy kazamatában"
+            }, status=400)
 
         for i in card_ids:
             if not Card.objects.filter(id=i, world=dungeon_obj.world).exists():
