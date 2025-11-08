@@ -72,3 +72,35 @@ def create_card(request: WSGIRequest):
         "status": "Ok",
         "skipped": skipped_cards,
     }, status=200)
+
+
+@wrappers.login_required()
+@require_http_methods(["PATCH"])
+def edit_card(request: WSGIRequest, card_id):
+    if not Card.objects.filter(id=card_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a kártya nem létezik"
+        }, status=404)
+
+    card_obj = Card.objects.get(id=card_id)
+    if card_obj.world.owner != request.user:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ezt a kártyát nem szerkesztheted"
+        }, status=403)
+
+    try:
+        body = json.loads(request.body)
+    except JSONDecodeError:
+        return JsonResponse({"error": "Bad request"}, status=400)
+
+    body.pop("world", None)
+    body.pop("owner", None)
+    body.pop("id", None)
+
+    Card.objects.filter(id=card_id).update(**body)
+
+    return JsonResponse({
+        "status": "Ok"
+    }, status=200)
