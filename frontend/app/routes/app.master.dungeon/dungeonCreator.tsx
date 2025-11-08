@@ -2,6 +2,7 @@ import { SelectValue } from "@radix-ui/react-select";
 import { ArrowLeft, Pencil, Plus, Trash, X } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -25,11 +26,16 @@ import {
   SelectItem,
   SelectTrigger,
 } from "~/components/ui/select";
+import { Separator } from "~/components/ui/separator";
 import {
   CardCollectionContext,
   type CardType,
 } from "~/context/CardCollectionContext";
-import { DungeonContext, type DungeonTypeType } from "~/context/DungeonContext";
+import {
+  DungeonContext,
+  type DungeonType,
+  type DungeonTypeType,
+} from "~/context/DungeonContext";
 
 const DungeonCreator = () => {
   const { dungeons, setDungeons } = useContext(DungeonContext);
@@ -48,12 +54,46 @@ const DungeonCreator = () => {
     setIsCardSelect(false);
   };
 
+  const AddDungeon = () => {
+    if (!dungeoName || !dungeonType) return;
+
+    const cards: number[] = [];
+    dungeonCollection.forEach((element) => {
+      cards.push(element.id);
+    });
+
+    const dungeon: DungeonType = {
+      id:
+        dungeons[dungeons.length - 1] !== undefined
+          ? dungeons[dungeons.length - 1].id + 1
+          : 0,
+      name: dungeoName,
+      type: dungeonType,
+      cards: cards,
+      world_id: 0,
+    };
+
+    setDungeons([...dungeons, dungeon]);
+    setIsDialogOpen(false);
+    toast.success("Sikeres kazamata létrehozzás");
+  };
+
   const HandleDelete = (id: number) => {
     setDungeonCollection((prev) => prev.filter((x) => x.id !== id));
   };
 
+  const HandleDeleteDungeon = (id: number) => {
+    setDungeons(dungeons.filter((x) => x.id !== id));
+    toast.success("Sikeres kazamata törlés");
+  };
+
   useEffect(() => {
     setIsCardSelect(false);
+
+    if (isDialogOpen) return;
+    setDungeoName(undefined);
+    setDungeonType(undefined);
+    setDungeonCollection([]);
   }, [isDialogOpen]);
 
   return (
@@ -67,20 +107,36 @@ const DungeonCreator = () => {
       <h1 className="text-5xl font-bold text-center">Kazamaták</h1>
       <section className="max-w-[50%] m-auto mt-10 flex flex-col gap-8">
         <ScrollArea className=" max-h-[25em]  border-2 border-gray-500 rounded-2xl p-2 overflow-auto">
-          <Item>
-            <ItemContent>
-              <ItemTitle>Kazamata neve</ItemTitle>
-              <ItemDescription>kazamata fajtája</ItemDescription>
-            </ItemContent>
-            <ItemActions>
-              <Button>
-                <Pencil></Pencil>
-              </Button>
-              <Button variant={"destructive"}>
-                <Trash></Trash>
-              </Button>
-            </ItemActions>
-          </Item>
+          {dungeons.length > 0 ? (
+            dungeons.map((e) => {
+              return (
+                <div>
+                  <Item>
+                    <ItemContent>
+                      <ItemTitle>{e.name}</ItemTitle>
+                      <ItemDescription>{e.type}</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                      <Button>
+                        <Pencil></Pencil>
+                      </Button>
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => {
+                          HandleDeleteDungeon(e.id);
+                        }}
+                      >
+                        <Trash></Trash>
+                      </Button>
+                    </ItemActions>
+                  </Item>
+                  <Separator></Separator>
+                </div>
+              );
+            })
+          ) : (
+            <h2>Még nincs létrehozott kazamatád</h2>
+          )}
         </ScrollArea>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger>
@@ -101,7 +157,7 @@ const DungeonCreator = () => {
                     Nincs elég kártya a gyűjteményedben!
                   </h1>
                 ) : (
-                  <section className="grid grid-cols-4 gap-3">
+                  <section className="grid grid-cols-4 gap-3 overflow-auto">
                     {collection
                       .filter((x) => !dungeonCollection.includes(x))
                       .map((e) => {
@@ -133,7 +189,12 @@ const DungeonCreator = () => {
               </div>
             ) : (
               <section>
-                <form>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    AddDungeon();
+                  }}
+                >
                   <FieldGroup>
                     <FieldSet>
                       <Field>
@@ -141,6 +202,7 @@ const DungeonCreator = () => {
                           Kazamata neve:
                         </FieldLabel>
                         <Input
+                          required
                           id="dungeon-name"
                           value={dungeoName}
                           onChange={(e) => {
@@ -154,6 +216,7 @@ const DungeonCreator = () => {
                           onValueChange={(e) =>
                             setDungeonType(e as DungeonTypeType)
                           }
+                          required
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Válassz egy típust"></SelectValue>
