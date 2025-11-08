@@ -1,0 +1,9 @@
+from django.urls import path
+
+from world import response
+
+urlpatterns = [
+    path("create", response.create_world, name="create_world"),
+    path("all", response.get_worlds, name="get_all_worlds"),
+    path("my", response.get_my_worlds, name="get_my_worlds")
+]

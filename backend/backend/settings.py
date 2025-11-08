@@ -91,7 +91,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'api',
-    'authenticate'
+    'authenticate',
+    'world'
 ]
 
 MIDDLEWARE = [
