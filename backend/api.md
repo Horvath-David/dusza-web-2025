@@ -270,7 +270,7 @@ All starts with `/api`
 {
     "id": "number", // optional, overwritten if exists, created if doesn't exist
     "world_id": "number", // which world should be associated with the save. frontend use only
-    "state": "json" // the game state itself
+    "state": "json", // the game state itself
 }
 ```
 
@@ -293,6 +293,8 @@ All starts with `/api`
 ```json
 {
     "world_id": "number",
-    "state": "json"
+    "state": "json",
+    "created_at": "ISO timestamp",
+    "last_updated_at": "ISO timestamp"
 }
 ```
