@@ -55,7 +55,7 @@ class Dungeon(models.Model):
     name = models.CharField(max_length=255)
     world = ForeignKey(World, on_delete=models.CASCADE)
     type = models.CharField(choices=DUNGEON_TYPES, max_length=50)
-    cards = models.ManyToManyField(Card)
+    cards = models.ManyToManyField(Card, null=True, blank=True)
     owner = ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
