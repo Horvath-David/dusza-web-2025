@@ -255,3 +255,44 @@ All starts with `/api`
     }
 }
 ```
+
+---
+
+---
+
+`/state`
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/save` PUT
+
+&nbsp;&nbsp;&nbsp;&nbsp;Upload a game state to be saved for later use
+
+```json
+{
+    "id": "number", // optional, overwritten if exists, created if doesn't exist
+    "world_id": "number", // which world should be associated with the save. frontend use only
+    "state": "json" // the game state itself
+}
+```
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns: only if and object was created
+
+```json
+{
+    "id": "number" // the newly created object's id
+}
+```
+
+---
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/<state_id>/get` GET
+
+&nbsp;&nbsp;&nbsp;&nbsp;Request a game state to be used again
+
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns: only if and object was created
+
+```json
+{
+    "world_id": "number",
+    "state": "json"
+}
+```

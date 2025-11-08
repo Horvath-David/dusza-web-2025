@@ -94,7 +94,8 @@ INSTALLED_APPS = [
     'authenticate',
     'world',
     'card',
-    'dungeon'
+    'dungeon',
+    'game_state',
 ]
 
 MIDDLEWARE = [
