@@ -55,7 +55,7 @@ def get_my_worlds(request: WSGIRequest):
         "worlds": [{
             "id": i.id,
             "name": i.name,
-            "owner": UserData.objects.get(user=request.user).display_name,
+            "owner": UserData.objects.get(user=i.owner).display_name if i.owner else "Törölt felhasználó",
             "is_public": i.is_public,
             "is_playable": i.is_playable
         } for i in worlds]
