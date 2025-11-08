@@ -54,6 +54,7 @@ def create_card(request: WSGIRequest):
             type=i.get("type"),
             world=world,
             owner=request.user,
+            is_boss=False
         )
 
     return JsonResponse({
