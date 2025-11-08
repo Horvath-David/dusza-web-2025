@@ -47,7 +47,8 @@ def create_card(request: WSGIRequest):
             hp=i.get("hp"),
             attack=i.get("attack"),
             type=i.get("type"),
-            world=world
+            world=world,
+            owner=request.user,
         )
 
     return JsonResponse({"status": "Ok"}, status=200)
