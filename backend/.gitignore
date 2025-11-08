@@ -4,3 +4,5 @@ migrations
 **/migrations
 db.sqlite3
 .env
+venv
+**/__pycache__
