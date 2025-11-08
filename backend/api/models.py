@@ -18,11 +18,7 @@ DUNGEON_TYPES = (
 
 # Create your models here.
 class UserData(models.Model):
-<<<<<<< HEAD
-    user = ForeignKey(User, on_delete=models.CASCADE)
-=======
     user = OneToOneField(User, on_delete=models.CASCADE)
->>>>>>> 4c7e475f0f6ffa5b5b153c4be0b250c459f96da7
     display_name = models.CharField(max_length=255)
 
     def __str__(self):
