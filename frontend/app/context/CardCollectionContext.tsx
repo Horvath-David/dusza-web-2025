@@ -13,21 +13,32 @@ export interface CardType {
 interface CardCollectionContextType {
   collection: CardType[];
   setCollection: (cards: CardType[]) => void;
+  modifyCard: (id: number, card: CardType) => void;
 }
 
 export const CardCollectionContext = createContext<CardCollectionContextType>({
   collection: [],
   setCollection: () => {},
+  modifyCard: () => {},
 });
 
 const CardCollectionContextProvider = (props: { children: ReactNode }) => {
   const [collection, setCollection] = useState<CardType[]>([]);
+
+  const modifyCard = (id: number, card: CardType) => {
+    setCollection((prev) => {
+      const newCards = [...prev];
+      newCards[id] = card;
+      return newCards;
+    });
+  };
 
   return (
     <CardCollectionContext.Provider
       value={{
         collection,
         setCollection,
+        modifyCard,
       }}
     >
       {props.children}
