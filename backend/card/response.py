@@ -41,7 +41,12 @@ def create_card(request: WSGIRequest):
             "error": "Ez nem a te világod"
         }, status=403)
 
+    skipped_cards = []
+
     for i in to_create:
+        if Card.objects.filter(name=i.get("name"), world=world).exists():
+            skipped_cards.append(i.get("name"))
+            continue
         Card.objects.create(
             name=i.get("name"),
             hp=i.get("hp"),
@@ -51,4 +56,7 @@ def create_card(request: WSGIRequest):
             owner=request.user,
         )
 
-    return JsonResponse({"status": "Ok"}, status=200)
+    return JsonResponse({
+        "status": "Ok",
+        "skipped": skipped_cards,
+    }, status=200)
