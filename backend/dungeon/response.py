@@ -141,3 +141,31 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
     return JsonResponse({
         "status": "Ok"
     }, status=200)
+
+
+@wrappers.login_required()
+@require_http_methods(["GET"])
+def get_dungeon_by_id(request: WSGIRequest, dungeon_id):
+    if not Dungeon.objects.filter(id=dungeon_id):
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a kazamata nem létezik"
+        }, status=404)
+
+    dungeon_obj = Dungeon.objects.get(id=dungeon_id)
+
+    return JsonResponse({
+        "status": "Ok",
+        "dungeon": {
+            "id": dungeon_obj.id,
+            "name": dungeon_obj.name,
+            "type": dungeon_obj.type,
+            "cards": [{
+                "id": i.id,
+                "name": i.name,
+                "hp": i.hp,
+                "attack": i.attack,
+                "type": i.type,
+            } for i in dungeon_obj.cards.all()]
+        }
+    })
