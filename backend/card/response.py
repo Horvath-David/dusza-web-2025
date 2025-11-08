@@ -104,3 +104,13 @@ def edit_card(request: WSGIRequest, card_id):
     return JsonResponse({
         "status": "Ok"
     }, status=200)
+
+
+@wrappers.login_required()
+@require_http_methods(["DELETE"])
+def delete_card(request: WSGIRequest, card_id):
+    Card.objects.filter(id=card_id).delete()
+
+    return JsonResponse({
+        "status": "Ok"
+    }, status=200)
