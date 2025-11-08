@@ -38,6 +38,7 @@ class Card(models.Model):
     attack = models.IntegerField()
     type = models.CharField(choices=CARD_TYPES, max_length=50)
     world = ForeignKey(World, on_delete=models.CASCADE)
+    owner = ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
