@@ -166,6 +166,11 @@ All starts with `/api`
 }
 ```
 
+
+&nbsp;&nbsp;&nbsp;&nbsp;`/<card_id>/delete` Delete
+
+&nbsp;&nbsp;&nbsp;&nbsp;Delete a card
+
 ---
 
 `/dungeon`
