@@ -3,14 +3,17 @@ from json import JSONDecodeError
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.views.decorators.http import require_http_methods
 
+from authenticate import wrappers
 from api.models import Card, World
 
 
 # Create your views here.
 
 
+@wrappers.login_required()
+@require_http_methods(["POST"])
 def create_card(request: WSGIRequest):
     try:
         body = json.loads(request.body)
@@ -32,6 +35,11 @@ def create_card(request: WSGIRequest):
         }, status=400)
 
     world = World.objects.get(id=world_id)
+    if world.owner != request.user:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez nem a te világod"
+        }, status=403)
 
     for i in to_create:
         Card.objects.create(
