@@ -5,7 +5,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
-from api.models import World, UserData, Card
+from api.models import World, UserData, Card, Dungeon
 from authenticate import wrappers
 # Create your views here.
 
@@ -84,4 +84,30 @@ def get_cards_per_world(request: WSGIRequest, world_id):
             "type": i.type,
             "is_boss": i.is_boss
         } for i in cards]
+    })
+
+
+@wrappers.login_required()
+@require_http_methods(["GET"])
+def get_dungeon_per_world(request: WSGIRequest, world_id):
+    if not World.objects.filter(id=world_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a világ nem létezik"
+        }, status=404)
+    world_obj = World.objects.get(id=world_id)
+    dungeons = Dungeon.objects.filter(world=world_obj)
+
+    return JsonResponse({
+        "status": "Ok",
+        "dungeons": [{
+            "name": i.name,
+            "type": i.type,
+            "cards": [{
+                "name": x.name,
+                "hp": x.hp,
+                "attack": x.attack,
+                "type": x.type,
+            } for x in i.cards.all()],
+        } for i in dungeons]
     })
