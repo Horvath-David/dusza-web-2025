@@ -117,4 +117,15 @@ All starts with `/api`
 }
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp;On success returns: a list of skipped card names in the `skipped` field as `string[]`
+&nbsp;&nbsp;&nbsp;&nbsp;On success returns:
+
+```json
+{
+    "skipped": [
+        {
+            "name": "string", // The skipped card's name
+            "reason": "string" //The reason for skipping the card
+        }
+    ]
+}
+```
