@@ -60,3 +60,12 @@ class Dungeon(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class GameState(models.Model):
+    world = ForeignKey(World, on_delete=models.CASCADE)
+    user = ForeignKey(User, on_delete=models.CASCADE)
+    state = models.JSONField()
+
+    def __str__(self):
+        return f"{self.user.username}'s state on world \"{self.world.name}\""
