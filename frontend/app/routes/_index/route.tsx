@@ -16,6 +16,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { API_URL } from "~/constants";
 import type { Route } from "./+types/route";
+import { cn } from "~/lib/utils";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Bejelentkezés | Damareen" }];
@@ -129,23 +130,49 @@ export default function Home({ actionData }: Route.ComponentProps) {
           );
         }}
       >
-        <Card>
+        <Card className="">
           <CardHeader>
-            {signUp ? (
-              <CardTitle>Regisztrálj</CardTitle>
-            ) : (
-              <CardTitle>Jelentkezz be</CardTitle>
-            )}
+            <div>
+              <CardTitle className="grid grid-rows-1 grid-cols-1">
+                <span
+                  className={cn(
+                    "opacity-0 row-start-1 row-end-1 col-start-1 col-end-1 transition-opacity pointer-events-none",
+                    signUp && "opacity-100 pointer-events-auto"
+                  )}
+                >
+                  Regisztrálj
+                </span>
 
-            {signUp ? (
-              <CardDescription>
+                <span
+                  className={cn(
+                    "opacity-100 row-start-1 row-end-1 col-start-1 col-end-1 transition-opacity",
+                    signUp && "opacity-0 pointer-events-none"
+                  )}
+                >
+                  Jelentkezz be
+                </span>
+              </CardTitle>
+            </div>
+
+            <CardDescription className="grid grid-rows-1 grid-cols-1">
+              <span
+                className={cn(
+                  "opacity-0 row-start-1 row-end-1 col-start-1 col-end-1 transition-opacity pointer-events-none",
+                  signUp && "opacity-100 pointer-events-auto"
+                )}
+              >
                 Készíts egy új fiókot, és fedezz fel számtalan izgalmas világot!
-              </CardDescription>
-            ) : (
-              <CardDescription>
+              </span>
+
+              <span
+                className={cn(
+                  "opacity-100 row-start-1 row-end-1 col-start-1 col-end-1 transition-opacity",
+                  signUp && "opacity-0 pointer-events-none"
+                )}
+              >
                 Folytasd ott, ahol abbahagytad, vagy kezdj egy új kalandot!
-              </CardDescription>
-            )}
+              </span>
+            </CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -162,19 +189,24 @@ export default function Home({ actionData }: Route.ComponentProps) {
                 />
               </div>
 
-              {signUp && (
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Becenév</Label>
-                  <Input
-                    id="displayName"
-                    type="text"
-                    placeholder="John Doe"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    required
-                  />
-                </div>
-              )}
+              <div
+                className={cn(
+                  "grid gap-2 h-0 opacity-0 -my-4 transition-[height,opacity,margin]",
+                  signUp &&
+                    "h-16 opacity-100 -my-2 transition-[height,opacity,margin]"
+                )}
+              >
+                <Label htmlFor="email">Becenév</Label>
+                <Input
+                  id="displayName"
+                  type="text"
+                  placeholder="John Doe"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required={signUp}
+                  tabIndex={!signUp ? -1 : undefined}
+                />
+              </div>
 
               <div className="grid gap-2">
                 <div className="flex items-center">
@@ -231,6 +263,10 @@ export default function Home({ actionData }: Route.ComponentProps) {
           </CardFooter>
         </Card>
       </form>
+
+      <span className="text-muted-foreground text-sm">
+        Made by <b>{"${csapatnev}"}</b>
+      </span>
     </div>
   );
 }
