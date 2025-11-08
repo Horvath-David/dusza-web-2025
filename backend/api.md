@@ -72,7 +72,7 @@ All starts with `/api`
 
 &nbsp;&nbsp;&nbsp;&nbsp;On success returns: same schema as in `/all`
 
-&nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/cars` GET
+&nbsp;&nbsp;&nbsp;&nbsp;`/<world_id>/cards` GET
 
 &nbsp;&nbsp;&nbsp;&nbsp;Returns all cards associated with a world
 
