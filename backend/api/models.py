@@ -46,6 +46,7 @@ class Card(models.Model):
     world = ForeignKey(World, on_delete=models.CASCADE)
     is_boss = models.BooleanField(default=False)
     owner = ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

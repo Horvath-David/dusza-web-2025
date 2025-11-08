@@ -3,7 +3,7 @@ from json import JSONDecodeError
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from authenticate import wrappers
@@ -52,22 +52,23 @@ def register(request: WSGIRequest):
             "status": "Error",
             "error": "Nem töltötted ki az összes mezőt"
         }, status=400)
-    try:
-        new_user = User.objects.create_user(
-            username=body.get("username"),
-            password=body.get("password"),
-            is_staff=False
-        )
-    except IntegrityError:
-        return JsonResponse({
-            "status": "Error",
-            "error": "Ez a felhasználónév már foglalt"
-        }, status=409)
+    with transaction.atomic():
+        try:
+            new_user = User.objects.create_user(
+                username=body.get("username"),
+                password=body.get("password"),
+                is_staff=False
+            )
+        except IntegrityError:
+            return JsonResponse({
+                "status": "Error",
+                "error": "Ez a felhasználónév már foglalt"
+            }, status=409)
 
-    UserData.objects.create(
-        user=new_user,
-        display_name=body.get("display_name")
-    )
+        UserData.objects.create(
+            user=new_user,
+            display_name=body.get("display_name")
+        )
 
     auth_login(request, new_user)
 

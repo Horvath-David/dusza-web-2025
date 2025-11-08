@@ -23,6 +23,26 @@ NEEDS_BOSS = {
 }
 
 
+def handle_cards(card_ids, body: dict):
+    dungeon_type = body.get("type")
+
+    if len(card_ids) != MAX_CARDS[dungeon_type]:
+        return False, f"Nem a megfelelő mennyiségű kártyát választottad ki. Ehhez a típushoz szükséges: {MAX_CARDS[dungeon_type]} darab"
+
+    if NEEDS_BOSS[dungeon_type]:
+        if not Card.objects.filter(id=card_ids[-1], is_boss=True).exists():
+            return False, "Nincsen vezérkártya vagy nem az utolsó helyen van"
+
+    card_objs = []
+    for idx, card_id in enumerate(card_ids):
+        card_obj = Card.objects.get(id=card_id)
+        card_obj.order = idx
+        card_obj.save()
+        card_objs.append(card_obj)
+
+    return True, card_objs
+
+
 @wrappers.login_required()
 @require_http_methods(["POST"])
 def create_dungeon(request: WSGIRequest):
@@ -46,6 +66,12 @@ def create_dungeon(request: WSGIRequest):
 
     card_ids = body.get("cards")
 
+    if len(set(card_ids)) != len(card_ids):
+        return JsonResponse({
+            "status": "Error",
+            "error": "Egy kártya csak egyser szerepelhet egy kazamatában"
+        }, status=400)
+
     for i in card_ids:
         if not Card.objects.filter(id=i, world=world_obj).exists():
             return JsonResponse({
@@ -53,20 +79,10 @@ def create_dungeon(request: WSGIRequest):
                 "error": "Egy vagy több megadott kártya nem létezik ebben a világban"
             }, status=400)
 
-    if len(card_ids) != MAX_CARDS[body.get("type")]:
-        return JsonResponse({
-            "status": "Error",
-            "error": f"Nem a megfelelő mennyiségű kártyát választottad ki. Ehhez a típushoz szükságes: {MAX_CARDS[body.get("type")]} darab"
-        }, status=400)
-
-    if NEEDS_BOSS[body.get("type")]:
-        if not Card.objects.filter(id=card_ids[-1], is_boss=True).exists():
-            return JsonResponse({
-                "status": "Error",
-                "error": "Nincsen vezérkártya vagy nem az utolsó helyen van"
-            }, status=400)
-
-    card_objs = [card for card in Card.objects.filter(id__in=card_ids, world=world_obj)]
+    success, result = handle_cards(card_ids, body)
+    if not success:
+        return JsonResponse({"status": "Error", "error": result}, status=400)
+    card_objs = result
 
     dungeon_obj = Dungeon.objects.create(
         name=body.get("name"),
@@ -111,6 +127,12 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
     if body.get("cards"):
         card_ids = body.get("cards")
 
+        if len(set(card_ids)) != len(card_ids):
+            return JsonResponse({
+                "status": "Error",
+                "error": "Egy kártya csak egyser szerepelhet egy kazamatában"
+            }, status=400)
+
         for i in card_ids:
             if not Card.objects.filter(id=i, world=dungeon_obj.world).exists():
                 return JsonResponse({
@@ -118,20 +140,10 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
                     "error": "Egy vagy több megadott kártya nem létezik ebben a világban"
                 }, status=400)
 
-        if len(card_ids) != MAX_CARDS[body.get("type")]:
-            return JsonResponse({
-                "status": "Error",
-                "error": f"Nem a megfelelő mennyiségű kártyát választottad ki. Ehhez a típushoz szükságes: {MAX_CARDS[body.get("type")]} darab"
-            }, status=400)
-
-        if NEEDS_BOSS[body.get("type")]:
-            if not Card.objects.filter(id=card_ids[-1], is_boss=True).exists():
-                return JsonResponse({
-                    "status": "Error",
-                    "error": "Nincsen vezérkártya vagy nem az utolsó helyen van"
-                }, status=400)
-
-        card_objs = [card for card in Card.objects.filter(id__in=card_ids, world=dungeon_obj.world)]
+        success, result = handle_cards(card_ids, body)
+        if not success:
+            return JsonResponse({"status": "Error", "error": result}, status=400)
+        card_objs = result
 
         dungeon_obj.cards.clear()
         dungeon_obj.cards.add(*card_objs)
@@ -166,6 +178,6 @@ def get_dungeon_by_id(request: WSGIRequest, dungeon_id):
                 "hp": i.hp,
                 "attack": i.attack,
                 "type": i.type,
-            } for i in dungeon_obj.cards.all()]
+            } for i in dungeon_obj.cards.all().order_by("order")]
         }
     })

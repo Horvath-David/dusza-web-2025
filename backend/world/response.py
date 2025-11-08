@@ -41,7 +41,9 @@ def get_worlds(request: WSGIRequest):
             "id": i.id,
             "name": i.name,
             "owner": UserData.objects.get(user=request.user).display_name,
-            "is_playable": i.is_playable
+            "is_playable": i.is_playable,
+            "dungeons": Dungeon.objects.filter(world=i).count(),
+            "cards": Card.objects.filter(world=i).count(),
         } for i in worlds]
     })
 
@@ -57,7 +59,9 @@ def get_my_worlds(request: WSGIRequest):
             "name": i.name,
             "owner": UserData.objects.get(user=i.owner).display_name if i.owner else "Törölt felhasználó",
             "is_public": i.is_public,
-            "is_playable": i.is_playable
+            "is_playable": i.is_playable,
+            "dungeons": Dungeon.objects.filter(world=i).count(),
+            "cards": Card.objects.filter(world=i).count(),
         } for i in worlds]
     })
 
@@ -110,6 +114,6 @@ def get_dungeon_per_world(request: WSGIRequest, world_id):
                 "hp": x.hp,
                 "attack": x.attack,
                 "type": x.type,
-            } for x in i.cards.all()],
+            } for x in i.cards.all().order_by("order")],
         } for i in dungeons]
     })
