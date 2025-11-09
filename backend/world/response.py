@@ -119,7 +119,7 @@ def get_worlds(request: WSGIRequest):
             "player_cards": [{
                 "id": x.id,
                 "name": x.name,
-                "hp": x.attack,
+                "hp": x.hp,
                 "attack": x.attack,
                 "type": x.type,
             } for x in Card.objects.filter(id__in=i.player_cards)],
@@ -144,7 +144,7 @@ def get_my_worlds(request: WSGIRequest):
             "player_cards": [{
                 "id": x.id,
                 "name": x.name,
-                "hp": x.attack,
+                "hp": x.hp,
                 "attack": x.attack,
                 "type": x.type,
             } for x in Card.objects.filter(id__in=i.player_cards)],
@@ -175,7 +175,7 @@ def get_world_by_id(request: WSGIRequest, world_id):
             "player_cards": [{
                 "id": i.id,
                 "name": i.name,
-                "hp": i.attack,
+                "hp": i.hp,
                 "attack": i.attack,
                 "type": i.type,
             } for i in Card.objects.filter(id__in=world_obj.player_cards)],
