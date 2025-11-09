@@ -100,6 +100,33 @@ def create_dungeon(request: WSGIRequest):
 
 
 @wrappers.login_required()
+@require_http_methods(["DELETE"])
+def delete_dungeon(request: WSGIRequest, dungeon_id):
+    if not Dungeon.objects.filter(id=dungeon_id).exists():
+        return JsonResponse({
+            "staus": "Error",
+            "error": "Ez a kazamata nem létezik"
+        }, status=404)
+    dungeon_obj = Dungeon.objects.get(id=dungeon_id)
+    if dungeon_obj.owner != request.user:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez nem a te kazamatád"
+        }, status=403)
+
+    if dungeon_obj.world.is_public:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ehhez a kazamatához tartozó világ már publikus"
+        }, status=403)
+
+    dungeon_obj.delete()
+    return JsonResponse({
+        "status": "Ok"
+    }, status=200)
+
+
+@wrappers.login_required()
 @require_http_methods(["POST"])
 def edit_dungeon(request: WSGIRequest, dungeon_id):
     if not Dungeon.objects.filter(id=dungeon_id).exists():
@@ -118,6 +145,12 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
         return JsonResponse({
             "status": "Error",
             "error": "Ez nem a te kazamatád"
+        }, status=403)
+
+    if dungeon_obj.world.is_public:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ehhez a kazamatához tartozó világ már publikus"
         }, status=403)
 
     if body.get("name"):
