@@ -9,6 +9,10 @@ import {
   ArrowLeft,
   Castle,
   FileStack,
+  Heart,
+  Play,
+  SkipForward,
+  Sword,
   Swords,
 } from "lucide-react";
 import {
@@ -30,6 +34,76 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
 export default function PlayerGame({ loaderData }: Route.ComponentProps) {
   const [game, setGame] = useState<GameStateResponse>(loaderData.game);
+
+  function handleCardBattle() {
+    setGame((prev) => ({
+      ...prev,
+      state: {
+        ...prev.state,
+        phase: "battle",
+        phaseData: {
+          ...prev.state.phaseData,
+          fightPhase: "attack",
+        },
+      },
+    }));
+
+    const winner = "player";
+
+    setTimeout(() => {
+      setGame((prev) => ({
+        ...prev,
+        state: {
+          ...prev.state,
+          phase: "battle",
+          phaseData: {
+            ...prev.state.phaseData,
+            fightPhase: "after",
+            winner,
+            playerWins:
+              winner === "player"
+                ? prev.state.phaseData.playerWins + 1
+                : prev.state.phaseData.playerWins,
+            enemyWins:
+              winner === "enemy"
+                ? prev.state.phaseData.enemyWins + 1
+                : prev.state.phaseData.enemyWins,
+          },
+        },
+      }));
+    }, 1500);
+  }
+
+  function handleNextCard() {
+    if (
+      game.state.phaseData?.fightIndex ===
+      (activeDungeon?.cards.length ?? 1) - 1
+    ) {
+      setGame((prev) => ({
+        ...prev,
+        state: {
+          ...prev.state,
+          phase:
+            prev.state.phaseData?.playerWins >= prev.state.phaseData?.enemyWins
+              ? "winner"
+              : "loser",
+        },
+      }));
+      return;
+    }
+    setGame((prev) => ({
+      ...prev,
+      state: {
+        ...prev.state,
+        phase: "battle",
+        phaseData: {
+          ...prev.state.phaseData,
+          fightIndex: prev.state.phaseData?.fightIndex + 1,
+          fightPhase: "before",
+        },
+      },
+    }));
+  }
 
   const activeDungeon = game.state.dungeons.find(
     (x) => x.id === game.state.phaseData?.dungeonId
@@ -262,7 +336,128 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
               <CardCard card={card} key={card.id} />
             ))}
           </div>
+
+          {game.state.phaseData?.fightIndex === undefined && (
+            <Button
+              onClick={() =>
+                setGame((prev) => ({
+                  ...prev,
+                  state: {
+                    ...prev.state,
+                    phase: "battle",
+                    phaseData: {
+                      dungeonId: activeDungeon?.id,
+                      fightIndex: 0,
+                      fightPhase: "before",
+                      playerWins: 0,
+                      enemyWins: 0,
+                    },
+                  },
+                }))
+              }
+            >
+              <Play />
+              Kezdés
+            </Button>
+          )}
+
+          {game.state.phaseData?.fightIndex !== undefined && (
+            <>
+              <span className="text-center">battling cards</span>
+              <div className="flex w-full justify-center gap-36">
+                <div className="w-42">
+                  <CardCard
+                    card={
+                      game.state.playerCards[game.state.phaseData?.fightIndex]
+                    }
+                  />
+                </div>
+
+                {game.state.phaseData?.fightPhase === "before" && (
+                  <Button onClick={handleCardBattle}>
+                    <Swords />
+                    Csata!
+                  </Button>
+                )}
+
+                {game.state.phaseData?.fightPhase === "after" && (
+                  <>
+                    <span>nyertes: {game.state.phaseData?.winner}</span>
+                    <Button onClick={handleNextCard}>
+                      <SkipForward />
+                      {game.state.phaseData?.fightIndex ===
+                      (activeDungeon?.cards.length ?? 1) - 1
+                        ? "Összegzés"
+                        : "Következő páros"}
+                    </Button>
+                  </>
+                )}
+
+                <div className="w-42">
+                  <CardCard
+                    card={
+                      activeDungeon?.cards[game.state.phaseData?.fightIndex]!
+                    }
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </>
+      )}
+
+      {game.state.phase === "winner" && (
+        <div className="flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-xl">
+          <h1 className="font-medium mt-8 py-2 text-4xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
+            Nyertél!
+          </h1>
+          <span className="text-sm -mt-1 text-white/70 font-semibold leading-tight">
+            Válaszd ki, hogy melyik kártyádat szeretnéd fejleszteni!
+          </span>
+
+          <div className="text-lg px-4 py-2 bg-white/5 border border-white/20 rounded-xl w-full h-full flex justify-center items-center">
+            Jutalmad:
+            {activeDungeon?.type === "basic" ? (
+              <span className="flex gap-1 items-center font-semibold">
+                <span>+1</span>
+                <Swords />
+              </span>
+            ) : activeDungeon?.type === "small" ? (
+              <span className="flex gap-1 items-center font-semibold">
+                <span>+2</span>
+                <Heart />
+              </span>
+            ) : activeDungeon?.type === "big" ? (
+              <span className="flex gap-1 items-center font-semibold">
+                <span>+3</span>
+                <Swords />
+              </span>
+            ) : (
+              ""
+            )}
+          </div>
+
+          <div className="grid w-full grid-cols-6 gap-4">
+            {game.state.playerCards.map((card) => (
+              <CardCard card={card} key={card.id} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {game.state.phase === "loser" && (
+        <div className="flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-xl">
+          <span className="text-2xl font-medium">
+            {game.state.phaseData?.winner === "player"
+              ? "A játékos"
+              : "A játékmester"}
+          </span>
+          <span className="text-sm -mt-1 text-white/70 font-semibold leading-tight">
+            {game.state.phaseData?.winner === "player"
+              ? "A játékos csapatnak elvesztette a világot!"
+              : "A játékmester elvesztette a világot!"}
+          </span>
+        </div>
       )}
     </div>
   );
