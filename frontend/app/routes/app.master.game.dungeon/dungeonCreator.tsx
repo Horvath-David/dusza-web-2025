@@ -27,6 +27,7 @@ import {
   SelectTrigger,
 } from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
+import { API_URL } from "~/constants";
 import {
   CardCollectionContext,
   type CardType,
@@ -36,10 +37,12 @@ import {
   type DungeonType,
   type DungeonTypeType,
 } from "~/context/DungeonContext";
+import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 
 const DungeonCreator = () => {
   const { dungeons, setDungeons } = useContext(DungeonContext);
   const { collection } = useContext(CardCollectionContext);
+  const { worldId } = useContext(MasterGeneralContext);
 
   const [dungeoName, setDungeoName] = useState<string>();
   const [dungeonType, setDungeonType] = useState<DungeonTypeType>();
@@ -53,27 +56,49 @@ const DungeonCreator = () => {
   const [dunId, setDunId] = useState<number>(0);
 
   const AddCardToDungeon = (id: number) => {
-    setDungeonCollection((prev) => [...prev, collection[id]]);
+    setDungeonCollection((prev) => [
+      ...prev,
+      ...collection.filter((e) => e.id === id),
+    ]);
     setIsCardSelect(false);
   };
 
-  const AddDungeon = () => {
+  const AddDungeon = async () => {
     if (!dungeoName || !dungeonType) return;
+
+    toast("jo");
 
     const cards: number[] = [];
     dungeonCollection.forEach((element) => {
       cards.push(element.id);
     });
 
+    const response = await fetch(API_URL + "/dungeon/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: dungeoName,
+        type: dungeonType,
+        cards: cards,
+        world_id: worldId,
+      }),
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
+
     const dungeon: DungeonType = {
-      id:
-        dungeons[dungeons.length - 1] !== undefined
-          ? dungeons[dungeons.length - 1].id + 1
-          : 0,
+      id: 0,
       name: dungeoName,
       type: dungeonType,
       cards: cards,
-      world_id: 0,
+      world_id: worldId,
     };
 
     setDungeons([...dungeons, dungeon]);
@@ -239,7 +264,7 @@ const DungeonCreator = () => {
                 {collection.filter(
                   (x) =>
                     !dungeonCollection.includes(x) &&
-                    (lilCheck() ? x.isBoss : !x.isBoss)
+                    (lilCheck() ? x.is_boss : !x.is_boss)
                 ).length < 1 ? (
                   <h1 className="text-xl">
                     Nincs elég kártya a gyűjteményedben!
@@ -250,7 +275,7 @@ const DungeonCreator = () => {
                       .filter(
                         (x) =>
                           !dungeonCollection.includes(x) &&
-                          (lilCheck() ? x.isBoss : !x.isBoss)
+                          (lilCheck() ? x.is_boss : !x.is_boss)
                       )
                       .map((e) => {
                         return (
@@ -262,10 +287,10 @@ const DungeonCreator = () => {
                           >
                             <h2 className="text-lg font-bold">{e.name}</h2>
                             <p>
-                              {e.attack}/{e.health}
+                              {e.attack}/{e.hp}
                             </p>
                             <p>{e.type}</p>
-                            <p>{e.isBoss && "(vezér)"}</p>
+                            <p>{e.is_boss && "(vezér)"}</p>
                           </div>
                         );
                       })}

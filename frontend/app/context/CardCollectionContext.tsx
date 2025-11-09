@@ -1,4 +1,13 @@
-import { createContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useEffect,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
+import { toast } from "sonner";
+import { API_URL } from "~/constants";
 
 export type ElementsType = "fire" | "earth" | "water" | "air";
 
@@ -6,14 +15,14 @@ export interface CardType {
   id: number;
   name: string;
   attack: number;
-  health: number;
+  hp: number;
   type: ElementsType;
-  isBoss: boolean;
+  is_boss: boolean;
 }
 
 interface CardCollectionContextType {
   collection: CardType[];
-  setCollection: (cards: CardType[]) => void;
+  setCollection: Dispatch<SetStateAction<CardType[]>>;
   modifyCard: (id: number, card: CardType) => void;
 }
 
@@ -32,6 +41,15 @@ const CardCollectionContextProvider = (props: { children: ReactNode }) => {
       return newCards;
     });
   };
+
+  // useEffect(() => {
+  //   if (!localStorage.getItem("collection")) return;
+  //   setCollection(JSON.parse(localStorage.getItem("collection")!));
+  // }, []);
+
+  // useEffect(() => {
+  //   localStorage.setItem("collection", JSON.stringify(collection));
+  // }, [collection]);
 
   return (
     <CardCollectionContext.Provider
