@@ -29,16 +29,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { API_URL } from "~/constants";
 import {
   CardCollectionContext,
   type CardType,
   type ElementsType,
 } from "~/context/CardCollectionContext";
+import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 
 const CollectionModifier = () => {
   const { collection, setCollection, modifyCard } = useContext(
     CardCollectionContext
   );
+
+  const { worldId } = useContext(MasterGeneralContext);
 
   const [cardElement, setCardElement] = useState<ElementsType>();
   const [cardName, setCardName] = useState<string>();
@@ -53,14 +57,13 @@ const CollectionModifier = () => {
 
   const [cardId, setCardId] = useState<number>(0);
 
-  const AddCard = () => {
+  const AddCard = async () => {
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
 
     let attack = cardAttack;
     let health = cardHealth;
 
     if (isBossCard) {
-      console.log("jp");
       if (doubleDmg) {
         attack = attack * 2;
       } else {
@@ -68,19 +71,41 @@ const CollectionModifier = () => {
       }
     }
 
+    const response = await fetch(API_URL + "/card/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        world_id: worldId,
+        cards: [
+          {
+            name: cardName,
+            hp: health,
+            attack: attack,
+            type: cardElement,
+            is_boss: isBossCard,
+          },
+        ],
+      }),
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      toast.error("Valami nem sikerült");
+      return;
+    }
+
+    const data = await response.json();
+
     const card: CardType = {
-      id:
-        collection[collection.length - 1] !== undefined
-          ? collection[collection.length - 1].id + 1
-          : 0,
+      id: data.ids[0],
       name: cardName,
       attack: attack,
-      health: health,
+      hp: health,
       type: cardElement,
-      isBoss: isBossCard,
+      is_boss: isBossCard,
     };
-
-    console.log(collection[1]);
 
     setCollection([...collection, card]);
 
@@ -92,17 +117,17 @@ const CollectionModifier = () => {
   const setModify = (id: number) => {
     setIsModify(true);
 
-    const card = collection[id];
+    const card = collection.filter((x) => x.id === id)[0];
     setCardId(id);
 
     setCardElement(card.type);
-    setCardHealth(card.health);
+    setCardHealth(card.hp);
     setCardAttack(card.attack);
     setCardName(card.name);
     setIsdialogOpen(true);
   };
 
-  const Modify = () => {
+  const Modify = async () => {
     console.log(cardId);
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
 
@@ -112,12 +137,27 @@ const CollectionModifier = () => {
       id: cardId,
       name: cardName,
       attack: cardAttack,
-      health: cardHealth,
+      hp: cardHealth,
       type: cardElement,
-      isBoss: false,
+      is_boss: false,
     };
 
     console.log(card);
+
+    const response = await fetch(API_URL + `/card/${cardId}/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(card),
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
 
     modifyCard(cardId, card);
 
@@ -165,18 +205,20 @@ const CollectionModifier = () => {
 
   return (
     <main className="p-5">
-      <Link to={"/app/master"}>
+      <Link to={"/app/master/game"}>
         <Button className="absolute">
           <ArrowLeft></ArrowLeft>
           Vissza
         </Button>
       </Link>
-      <h1 className="text-5xl font-bold text-center">
+      <h1 className="font-medium py-2 text-5xl text-center bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
         Hozd létre a gyűjteményed!
       </h1>
       <section className="flex flex-col items-center mt-7">
         <div className="flex flex-col gap-2">
-          <h2 className="text-xl">Gyűjteményed</h2>
+          <h2 className="font-medium text-xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
+            Gyűjteményed
+          </h2>
           <div className="w-[50em] h-[30em] border-2 border-white rounded-2xl grid grid-cols-4 p-7 gap-4 overflow-auto">
             {collection.map((e, idx) => {
               return (
@@ -188,10 +230,10 @@ const CollectionModifier = () => {
                 >
                   <h2 className="text-lg font-bold">{e.name}</h2>
                   <p className="text-md font-bold">
-                    {e.attack}/{e.health}
+                    {e.attack}/{e.hp}
                   </p>
                   <p>{e.type}</p>
-                  <p>{e.isBoss && "(vezér)"}</p>
+                  <p>{e.is_boss && "(vezér)"}</p>
                 </div>
               );
             })}
@@ -213,10 +255,11 @@ const CollectionModifier = () => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    if (checkForErrors()) return;
+
                     if (isModify) {
                       Modify();
                     } else {
+                      if (checkForErrors()) return;
                       AddCard();
                     }
                   }}
@@ -318,7 +361,7 @@ const CollectionModifier = () => {
                                   <SelectItem value="fire">Tűz</SelectItem>
                                   <SelectItem value="water">Víz</SelectItem>
                                   <SelectItem value="earth">Föld</SelectItem>
-                                  <SelectItem value="wind">Szél</SelectItem>
+                                  <SelectItem value="air">Szél</SelectItem>
                                 </SelectGroup>
                               </SelectContent>
                             </Select>

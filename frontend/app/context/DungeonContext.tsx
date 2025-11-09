@@ -1,4 +1,10 @@
-import { createContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 
 export type DungeonTypeType = "basic" | "small" | "big";
 
@@ -12,7 +18,7 @@ export type DungeonType = {
 
 type DungeonContextType = {
   dungeons: DungeonType[];
-  setDungeons: (dun: DungeonType[]) => void;
+  setDungeons: Dispatch<SetStateAction<DungeonType[]>>;
 };
 
 export const DungeonContext = createContext<DungeonContextType>({

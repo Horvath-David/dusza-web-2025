@@ -27,6 +27,7 @@ import {
   SelectTrigger,
 } from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
+import { API_URL } from "~/constants";
 import {
   CardCollectionContext,
   type CardType,
@@ -36,10 +37,12 @@ import {
   type DungeonType,
   type DungeonTypeType,
 } from "~/context/DungeonContext";
+import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 
 const DungeonCreator = () => {
   const { dungeons, setDungeons } = useContext(DungeonContext);
   const { collection } = useContext(CardCollectionContext);
+  const { worldId } = useContext(MasterGeneralContext);
 
   const [dungeoName, setDungeoName] = useState<string>();
   const [dungeonType, setDungeonType] = useState<DungeonTypeType>();
@@ -53,27 +56,53 @@ const DungeonCreator = () => {
   const [dunId, setDunId] = useState<number>(0);
 
   const AddCardToDungeon = (id: number) => {
-    setDungeonCollection((prev) => [...prev, collection[id]]);
+    setDungeonCollection((prev) => [
+      ...prev,
+      ...collection.filter((e) => e.id === id),
+    ]);
     setIsCardSelect(false);
   };
 
-  const AddDungeon = () => {
+  useEffect(() => {
+    console.log(dungeons);
+  }, []);
+
+  const AddDungeon = async () => {
     if (!dungeoName || !dungeonType) return;
+
+    toast("jo");
 
     const cards: number[] = [];
     dungeonCollection.forEach((element) => {
       cards.push(element.id);
     });
 
+    const response = await fetch(API_URL + "/dungeon/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: dungeoName,
+        type: dungeonType,
+        cards: cards,
+        world_id: worldId,
+      }),
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
+
     const dungeon: DungeonType = {
-      id:
-        dungeons[dungeons.length - 1] !== undefined
-          ? dungeons[dungeons.length - 1].id + 1
-          : 0,
+      id: 0,
       name: dungeoName,
       type: dungeonType,
       cards: cards,
-      world_id: 0,
+      world_id: worldId,
     };
 
     setDungeons([...dungeons, dungeon]);
@@ -93,7 +122,7 @@ const DungeonCreator = () => {
   const HandleOnModify = (id: number) => {
     setIsModifying(true);
 
-    const dungeon = dungeons[id];
+    const dungeon = dungeons.filter((e) => e.id === id)[0];
     setDungeoName(dungeon.name);
     setDungeonType(dungeon.type);
 
@@ -107,7 +136,7 @@ const DungeonCreator = () => {
     setIsDialogOpen(true);
   };
 
-  const ChangeDungeon = () => {
+  const ChangeDungeon = async () => {
     if (!dungeoName || !dungeonType) return;
 
     const cards: number[] = [];
@@ -120,8 +149,23 @@ const DungeonCreator = () => {
       name: dungeoName,
       type: dungeonType,
       cards: cards,
-      world_id: 0,
+      world_id: worldId,
     };
+
+    const response = await fetch(API_URL + `/dungeon/${dunId}/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dungeon),
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
     const newDun = dungeons.map((x) => (x.id === dunId ? dungeon : x));
     setDungeons(newDun);
     setIsModifying(false);
@@ -175,13 +219,15 @@ const DungeonCreator = () => {
 
   return (
     <main className="p-5">
-      <Link to={"/app/master"}>
-        <Button className="absolute">
+      <Link to={"/app/master/game"}>
+        <Button className="absolute" variant={"outline"}>
           <ArrowLeft></ArrowLeft>
           Vissza
         </Button>
       </Link>
-      <h1 className="text-5xl font-bold text-center">Kazamaták</h1>
+      <h1 className="font-medium text-5xl text-center bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
+        Kazamaták
+      </h1>
       <section className="max-w-[50%] m-auto mt-10 flex flex-col gap-8">
         <ScrollArea className=" max-h-[25em]  border-2 border-gray-500 rounded-2xl p-2 overflow-auto">
           {dungeons.length > 0 ? (
@@ -237,7 +283,7 @@ const DungeonCreator = () => {
                 {collection.filter(
                   (x) =>
                     !dungeonCollection.includes(x) &&
-                    (lilCheck() ? x.isBoss : !x.isBoss)
+                    (lilCheck() ? x.is_boss : !x.is_boss)
                 ).length < 1 ? (
                   <h1 className="text-xl">
                     Nincs elég kártya a gyűjteményedben!
@@ -248,7 +294,7 @@ const DungeonCreator = () => {
                       .filter(
                         (x) =>
                           !dungeonCollection.includes(x) &&
-                          (lilCheck() ? x.isBoss : !x.isBoss)
+                          (lilCheck() ? x.is_boss : !x.is_boss)
                       )
                       .map((e) => {
                         return (
@@ -260,10 +306,10 @@ const DungeonCreator = () => {
                           >
                             <h2 className="text-lg font-bold">{e.name}</h2>
                             <p>
-                              {e.attack}/{e.health}
+                              {e.attack}/{e.hp}
                             </p>
                             <p>{e.type}</p>
-                            <p>{e.isBoss && "(vezér)"}</p>
+                            <p>{e.is_boss && "(vezér)"}</p>
                           </div>
                         );
                       })}
