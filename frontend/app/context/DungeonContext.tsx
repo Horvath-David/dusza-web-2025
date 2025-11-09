@@ -31,23 +31,13 @@ export const DungeonContext = createContext<DungeonContextType>({
 const STORAGE_KEY = "dungeons";
 
 const DungeonContextProvider = (props: { children: ReactNode }) => {
-  const [dungeons, setDungeons] = useState<DungeonType[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as DungeonType[]) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [dungeons, setDungeons] = useState<DungeonType[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(dungeons));
-    } catch {
-      // ignore
-    }
+    } catch {}
   }, [dungeons]);
 
   const value = useMemo(() => ({ dungeons, setDungeons }), [dungeons]);
