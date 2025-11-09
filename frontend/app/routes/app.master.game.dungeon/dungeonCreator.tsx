@@ -114,7 +114,20 @@ const DungeonCreator = () => {
     setDungeonCollection((prev) => prev.filter((x) => x.id !== id));
   };
 
-  const HandleDeleteDungeon = (id: number) => {
+  const HandleDeleteDungeon = async (id: number) => {
+    const response = await fetch(API_URL + `/dungeon/${id}/delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
     setDungeons(dungeons.filter((x) => x.id !== id));
     toast.success("Sikeres kazamata törlés");
   };
