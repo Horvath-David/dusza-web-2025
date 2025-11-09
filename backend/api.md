@@ -173,7 +173,6 @@
                 cards: [ number ]         # List of card IDs to assign
                 type: basic|small|big
 
-
         /<dungeon_id>/delete:
             method: DELETE
             description: delete a dungeon
