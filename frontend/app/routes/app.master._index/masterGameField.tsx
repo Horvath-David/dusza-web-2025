@@ -91,25 +91,25 @@ const MasterGameField = () => {
       return;
     }
 
-    console.log(vami);
-
     setCollection((prev) => [...prev, ...data.cards]);
 
-    const response2 = await fetch(API_URL + `/world/${id}/dungeons`, {
-      method: "GET",
-      credentials: "include",
-    });
+    const response2 = await fetch(
+      API_URL + `/world/${id}/dungeons?card_ids_only=true`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
-    const data2 = await response.json();
+    const data2 = await response2.json();
 
     if (!response2.ok) {
       toast.error(data2.error);
       return;
     }
+    console.log("vami");
 
-    const atmeneti = [];
-
-    setDungeons((prev) => [...prev, ...data.dungeons]);
+    setDungeons((prev) => [...prev, ...data2.dungeons]);
   };
 
   const OnWorldDelete = async (id: number) => {
