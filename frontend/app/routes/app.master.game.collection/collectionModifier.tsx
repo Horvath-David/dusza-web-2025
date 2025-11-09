@@ -166,7 +166,20 @@ const CollectionModifier = () => {
     setIsdialogOpen(false);
   };
 
-  const deleteCard = () => {
+  const deleteCard = async () => {
+    const response = await fetch(API_URL + `/card/${cardId}/delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
     setCollection(collection.filter((x) => x.id !== cardId));
     toast.success("Sikeressen kitörölted a kártyát!");
 
