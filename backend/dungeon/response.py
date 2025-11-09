@@ -69,7 +69,7 @@ def create_dungeon(request: WSGIRequest):
     if len(set(card_ids)) != len(card_ids):
         return JsonResponse({
             "status": "Error",
-            "error": "Egy kártya csak egyser szerepelhet egy kazamatában"
+            "error": "Egy kártya csak egyszer szerepelhet egy kazamatában"
         }, status=400)
 
     for i in card_ids:
@@ -130,7 +130,7 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
         if len(set(card_ids)) != len(card_ids):
             return JsonResponse({
                 "status": "Error",
-                "error": "Egy kártya csak egyser szerepelhet egy kazamatában"
+                "error": "Egy kártya csak egyszer szerepelhet egy kazamatában"
             }, status=400)
 
         for i in card_ids:
