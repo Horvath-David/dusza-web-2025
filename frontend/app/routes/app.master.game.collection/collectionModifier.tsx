@@ -110,7 +110,7 @@ const CollectionModifier = () => {
     };
 
     setCollection([...collection, card]);
-    await getAllInfo(worldId)
+    await getAllInfo(worldId);
 
     toast.success("Sikeressen létrehoztad a kártyát!");
 
@@ -163,7 +163,7 @@ const CollectionModifier = () => {
     }
 
     modifyCard(cardId, card);
-    await getAllInfo(worldId)
+    await getAllInfo(worldId);
 
     toast.success("Sikeressen módosítottad a kártyát!");
 
@@ -185,7 +185,7 @@ const CollectionModifier = () => {
       return;
     }
     setCollection(collection.filter((x) => x.id !== cardId));
-    await getAllInfo(worldId)
+    await getAllInfo(worldId);
     toast.success("Sikeressen kitörölted a kártyát!");
 
     setIsdialogOpen(false);
@@ -237,7 +237,7 @@ const CollectionModifier = () => {
           <h2 className="font-medium text-xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
             Gyűjteményed
           </h2>
-          <div className="w-[50em] h-[30em] border-2 border-white rounded-2xl grid grid-cols-4 p-7 gap-4 overflow-auto">
+          <div className="w-[50em] h-[25em] border-2 border-white rounded-2xl grid grid-cols-4 p-7 gap-4 overflow-auto">
             {collection.map((e, idx) => {
               return (
                 <div
