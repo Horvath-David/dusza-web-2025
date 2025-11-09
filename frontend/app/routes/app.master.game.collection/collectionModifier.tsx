@@ -36,8 +36,10 @@ import {
   type ElementsType,
 } from "~/context/CardCollectionContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
+import { useGetAllInfo } from "~/helpers";
 
 const CollectionModifier = () => {
+  const getAllInfo = useGetAllInfo();
   const { collection, setCollection, modifyCard } = useContext(
     CardCollectionContext
   );
@@ -108,6 +110,7 @@ const CollectionModifier = () => {
     };
 
     setCollection([...collection, card]);
+    await getAllInfo(worldId)
 
     toast.success("Sikeressen létrehoztad a kártyát!");
 
@@ -160,6 +163,7 @@ const CollectionModifier = () => {
     }
 
     modifyCard(cardId, card);
+    await getAllInfo(worldId)
 
     toast.success("Sikeressen módosítottad a kártyát!");
 
@@ -181,6 +185,7 @@ const CollectionModifier = () => {
       return;
     }
     setCollection(collection.filter((x) => x.id !== cardId));
+    await getAllInfo(worldId)
     toast.success("Sikeressen kitörölted a kártyát!");
 
     setIsdialogOpen(false);

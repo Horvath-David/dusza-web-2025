@@ -38,8 +38,10 @@ import {
   type DungeonTypeType,
 } from "~/context/DungeonContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
+import { useGetAllInfo } from "~/helpers";
 
 const DungeonCreator = () => {
+     const getAllInfo = useGetAllInfo();
   const { dungeons, setDungeons } = useContext(DungeonContext);
   const { collection } = useContext(CardCollectionContext);
   const { worldId } = useContext(MasterGeneralContext);
@@ -107,6 +109,7 @@ const DungeonCreator = () => {
 
     setDungeons([...dungeons, dungeon]);
     setIsDialogOpen(false);
+    await getAllInfo(worldId)
     toast.success("Sikeres kazamata létrehozzás");
   };
 
@@ -129,6 +132,7 @@ const DungeonCreator = () => {
       return;
     }
     setDungeons(dungeons.filter((x) => x.id !== id));
+    await getAllInfo(worldId)
     toast.success("Sikeres kazamata törlés");
   };
 
@@ -182,6 +186,7 @@ const DungeonCreator = () => {
     const newDun = dungeons.map((x) => (x.id === dunId ? dungeon : x));
     setDungeons(newDun);
     setIsModifying(false);
+    await getAllInfo(worldId)
     toast.success("Sikeres módosítás");
     setIsDialogOpen(false);
   };
