@@ -1,27 +1,27 @@
-import { useState } from "react";
-import { API_URL, DUNGEON_TYPES } from "~/constants";
-import type { Card, GameStateResponse } from "~/models";
-import type { Route } from "./+types/route";
-import { CardCard } from "./card-card";
-import { Button } from "~/components/ui/button";
 import {
   AlertTriangle,
   ArrowLeft,
   Castle,
+  Check,
   FileStack,
   Heart,
   Loader2,
   Play,
   SkipForward,
-  Sword,
   Swords,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "~/components/ui/button";
 import {
-  Card as ShadcnCard,
   CardContent,
   CardFooter,
   CardHeader,
+  Card as ShadcnCard,
 } from "~/components/ui/card";
+import { API_URL, DUNGEON_TYPES } from "~/constants";
+import type { Card, GameStateResponse } from "~/models";
+import type { Route } from "./+types/route";
+import { CardCard } from "./card-card";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const res = await fetch(`${API_URL}/state/${params.id}`, {
@@ -35,6 +35,26 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
 export default function PlayerGame({ loaderData }: Route.ComponentProps) {
   const [game, setGame] = useState<GameStateResponse>(loaderData.game);
+  const timeout = useRef<NodeJS.Timeout>(undefined);
+
+  useEffect(() => {
+    if (timeout.current) clearTimeout(timeout.current);
+
+    timeout.current = setTimeout(async () => {
+      const res = await fetch(`${API_URL}/state/save`, {
+        method: "PUT",
+        body: JSON.stringify(game),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout.current);
+    };
+  }, [game]);
 
   function handleCardBattle() {
     setGame((prev) => ({
@@ -132,6 +152,40 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
         },
       },
     }));
+  }
+
+  function handleFinishDungeon() {
+    setGame((prev) => {
+      if (activeDungeon?.type === "basic") {
+        const i = prev.state.playerCards.findIndex(
+          (x) => x.id === game.state.phaseData?.selectedCard
+        );
+        prev.state.playerCards[i].attack += 1;
+      }
+      if (activeDungeon?.type === "small") {
+        const i = prev.state.playerCards.findIndex(
+          (x) => x.id === game.state.phaseData?.selectedCard
+        );
+        prev.state.playerCards[i].hp += 2;
+      }
+      if (activeDungeon?.type === "big") {
+        const i = prev.state.playerCards.findIndex(
+          (x) => x.id === game.state.phaseData?.selectedCard
+        );
+        prev.state.playerCards[i].attack += 3;
+      }
+
+      return {
+        ...prev,
+        state: {
+          ...prev.state,
+          phase: "deck",
+          playerDeck: prev.state.playerDeck.map(
+            (x) => prev.state.playerCards.find((y) => y.id === x.id)!
+          ),
+        },
+      };
+    });
   }
 
   const activeDungeon = game.state.dungeons.find(
@@ -354,7 +408,7 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
 
           <div className="flex flex-1 flex-col gap-4 w-full">
             <div className="flex flex-col gap-4 justify-start">
-              <div className="grid grid-cols-6 gap-4 [zoom:0.66] w-2/3">
+              <div className="flex *:w-42 gap-4 [zoom:0.66] w-2/3">
                 {game.state.playerDeck.map((card, idx) => (
                   <CardCard
                     selected={game.state.phaseData?.fightIndex === idx}
@@ -450,7 +504,7 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
               <h2 className="font-medium -mt-2 py-1 text-2xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent text-right">
                 Ellenfelek
               </h2>
-              <div className="grid grid-cols-6 gap-4 [zoom:0.66] w-2/3 ml-auto">
+              <div className="flex justify-end gap-4 [zoom:0.66] *:w-42 w-2/3 ml-auto">
                 {activeDungeon?.cards.map((card, idx) => (
                   <CardCard
                     selected={game.state.phaseData?.fightIndex === idx}
@@ -497,9 +551,34 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
 
           <div className="grid w-full grid-cols-6 gap-4">
             {game.state.playerCards.map((card) => (
-              <CardCard card={card} key={card.id} />
+              <CardCard
+                card={card}
+                key={card.id}
+                selected={game.state.phaseData?.selectedCard === card.id}
+                onClick={() =>
+                  setGame((prev) => ({
+                    ...prev,
+                    state: {
+                      ...prev.state,
+                      phaseData: {
+                        ...prev.state.phaseData,
+                        selectedCard: card.id,
+                      },
+                    },
+                  }))
+                }
+              />
             ))}
           </div>
+
+          {game.state.phaseData?.selectedCard && (
+            <div className="w-full flex mt-8 pb-8 justify-center items-center">
+              <Button size={"lg"} onClick={handleFinishDungeon}>
+                <Check />
+                Befejezés
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
