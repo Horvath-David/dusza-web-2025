@@ -1,4 +1,4 @@
-import { Clock, FileStack, Search, Swords } from "lucide-react";
+import { FileStack, Search, Swords } from "lucide-react";
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { buttonVariants } from "~/components/ui/button";
@@ -106,8 +106,9 @@ export default function PlayerIndex({ loaderData }: Route.ComponentProps) {
       </h1>
 
       <div className="grid grid-cols-4 gap-4">
-        {loaderData.games.slice(0, 4).map((game, i) => (
-          <div
+        {loaderData.games.slice(0, 4).map((game) => (
+          <Link
+            to={`/app/player/game/${game.id}`}
             key={game.id}
             className={cn(
               "bg-linear-to-bl h-56 from-cyan-700 filter-[grayscale(1)] duration-400 hover:filter-[grayscale(0)] to-blue-800/20 rounded-xl w-full hover:brightness-120 transition-[filter] hover:transition-[filter]"
@@ -136,7 +137,7 @@ export default function PlayerIndex({ loaderData }: Route.ComponentProps) {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
