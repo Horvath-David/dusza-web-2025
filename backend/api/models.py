@@ -33,6 +33,7 @@ class World(models.Model):
     owner = ForeignKey(User, on_delete=models.SET_NULL, null=True)
     is_public = models.BooleanField(default=False)
     is_playable = models.BooleanField(default=False)
+    player_cards = models.JSONField(default=list)
 
     def __str__(self):
         return self.name

@@ -89,6 +89,11 @@ def edit_card(request: WSGIRequest, card_id):
             "status": "Error",
             "error": "Ezt a kártyát nem szerkesztheted"
         }, status=403)
+    if card_obj.world.is_public:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ezt a kártyát nem törölheted, mert a hozzá tartozó világ már publikus"
+        }, status=403)
 
     try:
         body = json.loads(request.body)
@@ -109,8 +114,45 @@ def edit_card(request: WSGIRequest, card_id):
 @wrappers.login_required()
 @require_http_methods(["DELETE"])
 def delete_card(request: WSGIRequest, card_id):
-    Card.objects.filter(id=card_id).delete()
+    if not Card.objects.filter(id=card_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a kártya nem létezik"
+        }, status=404)
+    card_obj = Card.objects.get(id=card_id)
+    if card_obj.world.owner != request.user:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ezt a kártyát nem törölheted"
+        }, status=403)
+    if card_obj.world.is_public:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ezt a kártyát nem törölheted, mert a hozzá tartozó világ már publikus"
+        }, status=403)
+    card_obj.delete()
 
     return JsonResponse({
         "status": "Ok"
     }, status=200)
+
+
+@wrappers.login_required()
+@require_http_methods(["GET"])
+def get_card_by_id(request: WSGIRequest, card_id):
+    if not Card.objects.filter(id=card_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a kártya nem létezik"
+        }, status=404)
+    card = Card.objects.get(id=card_id)
+    return JsonResponse({
+        "status": "Ok",
+        "card": {
+            "id": card.id,
+            "name": card.name,
+            "hp": card.hp,
+            "attack": card.attack,
+            "type": card.type,
+        }
+    })
