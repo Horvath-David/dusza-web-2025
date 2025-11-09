@@ -36,8 +36,6 @@ export async function clientLoader() {
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
 
-  console.log(Object.fromEntries(formData));
-
   try {
     if (formData.get("signUp") === "true") {
       const res = await fetch(`${API_URL}/auth/register`, {
@@ -103,7 +101,6 @@ export default function Home({ actionData }: Route.ComponentProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log(actionData);
     if (actionData?.ok) {
       navigate("/app");
     }
