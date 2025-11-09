@@ -1,6 +1,7 @@
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { useContext, useState } from "react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -8,10 +9,12 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { API_URL } from "~/constants";
 import {
   CardCollectionContext,
   type CardType,
 } from "~/context/CardCollectionContext";
+import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 import { PlayerDeckContext } from "~/context/playerCardContext";
 
 const PlayerDeck = () => {
@@ -19,15 +22,62 @@ const PlayerDeck = () => {
   // const [playerDeck, setPlayerDeck] = useState<CardType[]>([]);
   const { playerDeck, setPlayerDeck } = useContext(PlayerDeckContext);
 
+  const { worldId } = useContext(MasterGeneralContext);
+
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const AddCardToPlayer = (id: number) => {
-    setPlayerDeck([...playerDeck, collection.filter((e) => e.id === id)[0]]);
+  const AddCardToPlayer = async (id: number) => {
+    const newDeck = [...playerDeck, collection.find((e) => e.id === id)!];
+
+    setPlayerDeck(newDeck);
+
     setIsDialogOpen(false);
+    console.log(newDeck.map((e) => e.id));
+
+    const response = await fetch(`${API_URL}/world/${worldId}/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        player_cards: newDeck.map((e) => e.id),
+      }),
+      credentials: "include",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
+
+    toast.success("Sikeres hozzáadás");
   };
 
-  const HandleDelete = (id: number) => {
-    setPlayerDeck(playerDeck.filter((e) => e.id !== id));
+  const HandleDelete = async (id: number) => {
+    const newDeck = playerDeck.filter((e) => e.id !== id);
+    setPlayerDeck(newDeck);
+
+    const response = await fetch(`${API_URL}/world/${worldId}/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        player_cards: newDeck.map((e) => e.id),
+      }),
+      credentials: "include",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
+
+    toast.success("Sikeres törlés");
   };
 
   return (
