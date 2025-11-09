@@ -21,7 +21,7 @@ def create_world(request: WSGIRequest):
     world_obj = World.objects.create(
         name=body.get("name"),
         owner=request.user,
-        is_public=False,
+        is_public=True,
         is_playable=False,
     )
 
