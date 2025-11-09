@@ -124,13 +124,8 @@ const MasterGameField = () => {
       toast.error(data3.error);
       return;
     }
-    console.log(data3.world.player_cards);
 
-    setPlayerDeck(
-      collection.filter((x) => data3.world.player_cards.include(x.id))
-    );
-
-    // setDungeons((prev) => [...prev, ...data3.dungeons]);
+    setPlayerDeck([...data3.world.player_cards]);
   };
 
   const OnWorldDelete = async (id: number) => {
