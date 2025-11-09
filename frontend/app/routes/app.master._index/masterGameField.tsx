@@ -26,6 +26,7 @@ import {
 } from "~/context/CardCollectionContext";
 import { DungeonContext } from "~/context/DungeonContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
+import { PlayerDeckContext } from "~/context/playerCardContext";
 
 type WorldType = {
   id: number;
@@ -40,8 +41,9 @@ const MasterGameField = () => {
   const [gameName, setGameName] = useState<string>();
 
   const { worldId, setWorldId } = useContext(MasterGeneralContext);
+  const { playerDeck, setPlayerDeck } = useContext(PlayerDeckContext);
 
-  const { setCollection } = useContext(CardCollectionContext);
+  const { collection, setCollection } = useContext(CardCollectionContext);
 
   const { setDungeons } = useContext(DungeonContext);
 
@@ -110,6 +112,25 @@ const MasterGameField = () => {
     console.log("vami");
 
     setDungeons((prev) => [...prev, ...data2.dungeons]);
+
+    const response3 = await fetch(API_URL + `/world/${id}`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const data3 = await response3.json();
+
+    if (!response3.ok) {
+      toast.error(data3.error);
+      return;
+    }
+    console.log(data3.world.player_cards);
+
+    setPlayerDeck(
+      collection.filter((x) => data3.world.player_cards.include(x.id))
+    );
+
+    // setDungeons((prev) => [...prev, ...data3.dungeons]);
   };
 
   const OnWorldDelete = async (id: number) => {
