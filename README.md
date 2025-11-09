@@ -7,7 +7,7 @@ Ez az útmutató az alkalmazás felületének használatát mutatja be. Két fő
 - Játékos nézet: világok böngészése, saját játékok kezelése, aktív játékhoz csatlakozás.
 - A nézeteken belül a „Vissza” gombbal léphetsz vissza a fő játéknézetre.
 
-## MastJátékmesterer nézet
+## Játékmester nézet
 
 ### Gyűjtemény kezelése
 - Lista: a „Gyűjteményed” rács a kártyákat mutatja (név, sebzés/HP, elem, „(vezér)” jelzés).
