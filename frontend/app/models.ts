@@ -12,6 +12,7 @@ export interface World {
   is_public: boolean;
   dungeons: number;
   cards: number;
+  player_cards: Card[];
 }
 
 export interface Card {
