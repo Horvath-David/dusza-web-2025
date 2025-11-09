@@ -249,34 +249,17 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
             {activeDungeon?.name}
           </h1>
 
+          <span>your cards</span>
           <div className="grid grid-cols-6 gap-4">
-            {game.state.cards.map((card) => (
-              <CardCard
-                selected={
-                  game.state.phase === "deck" &&
-                  !!game.state.playerDeck.find((x) => x.id === card.id)
-                }
-                card={card}
-                key={card.id}
-                onClick={
-                  game.state.phase === "deck"
-                    ? () =>
-                        setGame((prev) => ({
-                          ...prev,
-                          state: {
-                            ...prev.state,
-                            playerDeck: !prev.state.playerDeck.find(
-                              (x) => x.id === card.id
-                            )
-                              ? [...prev.state.playerDeck, card]
-                              : prev.state.playerDeck.filter(
-                                  (x) => x.id !== card.id
-                                ),
-                          },
-                        }))
-                    : undefined
-                }
-              />
+            {game.state.playerDeck.map((card) => (
+              <CardCard card={card} key={card.id} />
+            ))}
+          </div>
+
+          <span>enemy cards</span>
+          <div className="grid grid-cols-6 gap-4">
+            {activeDungeon?.cards.map((card) => (
+              <CardCard card={card} key={card.id} />
             ))}
           </div>
         </>
