@@ -86,7 +86,7 @@ def edit_world(request: WSGIRequest, world_id):
             dirty = False
             for i in body.get("player_cards"):
                 if Card.objects.filter(id=i, world=world_obj).exists():
-                    cards.append(Card.objects.get(id=i))
+                    cards.append(Card.objects.get(id=i).id)
                 else:
                     dirty = True
                     break
