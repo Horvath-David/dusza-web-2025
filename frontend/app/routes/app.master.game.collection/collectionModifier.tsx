@@ -57,8 +57,6 @@ const CollectionModifier = () => {
 
   const [cardId, setCardId] = useState<number>(0);
 
-  useEffect(() => {}, []);
-
   const AddCard = async () => {
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
 
@@ -74,38 +72,35 @@ const CollectionModifier = () => {
       }
     }
 
-    // const response = await fetch(API_URL + "/card/create", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     worldId: worldId,
-    //     cards: [
-    //       {
-    //         name: cardName,
-    //         hp: cardHealth,
-    //         attack: cardAttack,
-    //         type: cardElement,
-    //         isBoss: isBossCard,
-    //       },
-    //     ],
-    //   }),
-    //   credentials: "include",
-    // });
+    const response = await fetch(API_URL + "/card/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        world_id: worldId,
+        cards: [
+          {
+            name: cardName,
+            hp: cardHealth,
+            attack: cardAttack,
+            type: cardElement,
+            isBoss: isBossCard,
+          },
+        ],
+      }),
+      credentials: "include",
+    });
 
-    // if (!response.ok) {
-    //   toast.error("Valami nem sikerült");
-    //   return;
-    // }
+    if (!response.ok) {
+      toast.error("Valami nem sikerült");
+      return;
+    }
 
-    // const data = await response.json();
+    const data = await response.json();
 
     const card: CardType = {
-      id:
-        collection[collection.length - 1] !== undefined
-          ? collection[collection.length - 1].id + 1
-          : 0,
+      id: data.ids[0],
       name: cardName,
       attack: attack,
       health: health,

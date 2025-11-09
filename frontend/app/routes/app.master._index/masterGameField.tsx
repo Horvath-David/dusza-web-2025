@@ -20,6 +20,7 @@ import {
 } from "~/components/ui/item";
 import { Separator } from "~/components/ui/separator";
 import { API_URL } from "~/constants";
+import { CardCollectionContext } from "~/context/CardCollectionContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 
 type WorldType = {
@@ -34,7 +35,9 @@ const MasterGameField = () => {
 
   const [gameName, setGameName] = useState<string>();
 
-  const { worldId, setWorldId } = useContext(MasterGeneralContext);
+  const { setWorldId } = useContext(MasterGeneralContext);
+
+  const { setCollection } = useContext(CardCollectionContext);
 
   const [allWorld, setAllWorld] = useState<WorldType[]>([]);
 
@@ -53,11 +56,23 @@ const MasterGameField = () => {
     data.worlds.forEach((element: WorldType) => {
       setAllWorld((prev) => [...prev, element]);
     });
-    // console.log(data);
   };
 
-  const OnModifyDungeon = (id: number) => {
+  const getAllInfo = async (id: number) => {
+    const response = await fetch(API_URL + `/world/${id}/cards`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+  };
+
+  const OnModifyDungeon = async (id: number) => {
     setWorldId(id);
+    getAllInfo(id);
+
     navi("game");
   };
 
