@@ -67,6 +67,7 @@
                 name: string
                 is_playable: bool
                 is_public: bool
+                
         /<world_id>/delete:
             method: DELETE
             description: Delete a world. If doesn't exist still returns 200
