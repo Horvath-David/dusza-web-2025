@@ -52,7 +52,7 @@ export default function PlayerIndex({ loaderData }: Route.ComponentProps) {
                 {world.name}
               </span>
               <span className="text-sm -mt-1 text-white/70 font-semibold leading-none">
-                by {world.owner}
+                készítő: {world.owner}
               </span>
 
               <div className="flex gap-4 justify-end items-center mt-auto pr-1 w-full font-semibold">

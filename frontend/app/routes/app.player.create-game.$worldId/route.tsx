@@ -149,7 +149,7 @@ export default function PlayerCreateGame({
               {loaderData.world.name}
             </span>
             <span className="text-sm -mt-1 text-white/70 font-semibold leading-none">
-              by {loaderData.world.owner}
+              készítő: {loaderData.world.owner}
             </span>
 
             <div className="flex gap-4 justify-end items-center mt-auto pr-1 w-full font-semibold">

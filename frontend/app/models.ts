@@ -48,4 +48,6 @@ export interface GameState {
   dungeons: Dungeon[];
   playerCards: Card[];
   playerDeck: Card[];
+  phase: string;
+  phaseData: any;
 }
