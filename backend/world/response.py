@@ -211,6 +211,7 @@ def get_cards_per_world(request: WSGIRequest, world_id):
 @wrappers.login_required()
 @require_http_methods(["GET"])
 def get_dungeon_per_world(request: WSGIRequest, world_id):
+    card_ids_only = request.GET.get("card_ids_only") == "true"
     if not World.objects.filter(id=world_id).exists():
         return JsonResponse({
             "status": "Error",
@@ -232,6 +233,8 @@ def get_dungeon_per_world(request: WSGIRequest, world_id):
                 "attack": x.attack,
                 "type": x.type,
                 "is_boss": x.is_boss,
-            } for x in i.cards.all().order_by("order")],
+            } for x in i.cards.all().order_by("order")]
+            if not card_ids_only else
+            [y.id for y in i.cards.all().order_by("order")],
         } for i in dungeons]
     })
