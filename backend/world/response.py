@@ -32,6 +32,48 @@ def create_world(request: WSGIRequest):
 
 
 @wrappers.login_required()
+@require_http_methods(["DELETE"])
+def delete_world(request: WSGIRequest, world_id):
+    World.objects.filter(id=world_id).delete()
+    return JsonResponse({
+        "status": "Ok"
+    }, status=200)
+
+
+@wrappers.login_required()
+@require_http_methods(["PATCH"])
+def edit_world(request: WSGIRequest, world_id):
+    if not World.objects.filter(id=world_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a világ nem létezik"
+        }, status=404)
+
+    world_obj = World.objects.get(id=world_id)
+    if world_obj.owner != request.user:
+        return JsonResponse({
+            "status": "Error",
+            "Error": "Ez nem a te világod"
+        }, status=403)
+
+    try:
+        body = json.loads(request.body)
+    except JSONDecodeError:
+        return JsonResponse({"error": "Bad request"}, status=400)
+
+    if body.get("name"):
+        world_obj.name = body.get("name")
+    if body.get("is_public") is not None:
+        world_obj.is_public = body.get("is_public")
+    if body.get("is_playable") is not None:
+        world_obj.is_playable = body.get("is_playable")
+    world_obj.save()
+    return JsonResponse({
+        "status": "Ok"
+    }, status=200)
+
+
+@wrappers.login_required()
 @require_http_methods(["GET"])
 def get_worlds(request: WSGIRequest):
     worlds = World.objects.filter(is_public=True)

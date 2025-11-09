@@ -59,7 +59,18 @@
                     is_public: bool
                     dungeons: number        # The number of dungeons in this world
                     cards: number           # The number of cards in this world
-        
+
+        /<world_id>/update:
+            method: PATCH
+            description: Modify a world's properties, Only the included fields will be modified
+            body:
+                name: string
+                is_playable: bool
+                is_public: bool
+        /<world_id>/delete:
+            method: DELETE
+            description: Delete a world. If doesn't exist still returns 200
+
         /<world_id>/cards:
             method: GET
             description: Get all cards associated with a world
