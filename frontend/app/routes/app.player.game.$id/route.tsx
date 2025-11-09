@@ -1,8 +1,8 @@
-import { cn } from "~/lib/utils";
-import type { Route } from "./+types/route";
-import type { GameStateResponse } from "~/models";
-import { API_URL } from "~/constants";
 import { FileStack, Loader2, Swords } from "lucide-react";
+import { API_URL } from "~/constants";
+import { cn } from "~/lib/utils";
+import type { GameStateResponse } from "~/models";
+import type { Route } from "./+types/route";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const res = await fetch(`${API_URL}/state/${params.id}`, {

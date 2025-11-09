@@ -15,34 +15,6 @@ export async function clientLoader() {
   console.log(worlds);
 
   return { worlds };
-  //   return {
-  //     worlds: [
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //       ...worlds,
-  //     ],
-  //   };
 }
 
 const randomColors = [

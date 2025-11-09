@@ -15,8 +15,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { API_URL } from "~/constants";
-import type { Route } from "./+types/route";
 import { cn } from "~/lib/utils";
+import type { Route } from "./+types/route";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Bejelentkezés | Damareen" }];

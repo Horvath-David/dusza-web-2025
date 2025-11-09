@@ -1,5 +1,3 @@
-import { Layers2 } from "lucide-react";
-
 export function Logo() {
   return (
     <div className="flex flex-row gap-[0.5em] items-center">
