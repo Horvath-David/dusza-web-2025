@@ -127,7 +127,7 @@ def delete_dungeon(request: WSGIRequest, dungeon_id):
 
 
 @wrappers.login_required()
-@require_http_methods(["POST"])
+@require_http_methods(["POST", "PATCH"])
 def edit_dungeon(request: WSGIRequest, dungeon_id):
     if not Dungeon.objects.filter(id=dungeon_id).exists():
         return JsonResponse({
