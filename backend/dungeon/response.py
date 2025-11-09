@@ -178,6 +178,7 @@ def get_dungeon_by_id(request: WSGIRequest, dungeon_id):
                 "hp": i.hp,
                 "attack": i.attack,
                 "type": i.type,
+                "is_boss": i.is_boss,
             } for i in dungeon_obj.cards.all().order_by("order")]
         }
     })

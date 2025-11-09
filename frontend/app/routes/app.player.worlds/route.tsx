@@ -14,35 +14,35 @@ export async function clientLoader() {
 
   console.log(worlds);
 
-  // return { worlds };
-  return {
-    worlds: [
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-      ...worlds,
-    ],
-  };
+  return { worlds };
+  //   return {
+  //     worlds: [
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //       ...worlds,
+  //     ],
+  //   };
 }
 
 const randomColors = [
@@ -82,15 +82,17 @@ export default function PlayerWorlds({ loaderData }: Route.ComponentProps) {
                 {world.name}
               </span>
               <span className="text-sm -mt-1 text-white/70 font-semibold leading-none">
-                by @{world.owner}
+                by {world.owner}
               </span>
 
               <div className="flex gap-4 justify-end items-center mt-auto pr-1 w-full font-semibold">
                 <div className="flex gap-1 items-center">
-                  <FileStack size={20} />9
+                  <FileStack size={20} />
+                  {world.cards}
                 </div>
                 <div className="flex gap-1 items-center">
-                  <Swords size={20} />4
+                  <Swords size={20} />
+                  {world.dungeons}
                 </div>
               </div>
             </div>

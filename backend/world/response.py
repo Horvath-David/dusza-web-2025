@@ -68,6 +68,31 @@ def get_my_worlds(request: WSGIRequest):
 
 @wrappers.login_required()
 @require_http_methods(["GET"])
+def get_world_by_id(request: WSGIRequest, world_id):
+    if not World.objects.filter(id=world_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a világ nem létezik"
+        }, status=404)
+
+    world_obj = World.objects.get(id=world_id)
+
+    return JsonResponse({
+        "status": "Ok",
+        "world": {
+            "id": world_obj.id,
+            "name": world_obj.name,
+            "owner": UserData.objects.get(user=world_obj.owner).display_name if world_obj.owner else "Törölt felhasználó",
+            "is_playable": world_obj.is_playable,
+            "is_public": world_obj.is_public,
+            "dungeons": Dungeon.objects.filter(world=world_obj).count(),
+            "cards": Card.objects.filter(world=world_obj).count(),
+        }
+    })
+
+
+@wrappers.login_required()
+@require_http_methods(["GET"])
 def get_cards_per_world(request: WSGIRequest, world_id):
     if not World.objects.filter(id=world_id).exists():
         return JsonResponse({
@@ -114,6 +139,7 @@ def get_dungeon_per_world(request: WSGIRequest, world_id):
                 "hp": x.hp,
                 "attack": x.attack,
                 "type": x.type,
+                "is_boss": x.is_boss,
             } for x in i.cards.all().order_by("order")],
         } for i in dungeons]
     })
