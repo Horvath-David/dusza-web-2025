@@ -79,6 +79,19 @@ Ez az útmutató az alkalmazás felületének használatát mutatja be. Két fő
 - A „Vissza” gomb bármikor visszavisz a játék fő nézetébe.
 - Kazamatáknál mindig ellenőrizd a típushoz előírt kártyaszámot, különben a mentés nem engedélyezett.
 
+---
+
+# Továbbfejlesztési ötletek:
+ - Lehessen játékokat publikussá és priváttá tenni, hogy amíg szerkesztés alatt van addig más játékosok ne tudjanak játszani vele
+ - Többjátékos mód amiben a kazamata kártyái helyett más játékosok kártyái ellen lehet játszani
+ - Több kazamata típus
+ - Felhasználói profil szerkesztése (jelszó, becenév)
+ - Oktatómód az új játékosoknak
+ - Kedvenc játékok megjelölése
+ - Jegyzetek hozzáadása kazamatákhoz és játékokhoz
+ - Játékok megosztása linkkel
+ - Keresés és szűrés: név, elem, típus és „vezér” szerint a gyűjteményben és kazamatáknál
+
 ```
     Copyright (C) 2025  ${csapatnev} team (Béla Buczkó, Dávid Horváth, Márton Vad)
 
