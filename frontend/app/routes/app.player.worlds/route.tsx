@@ -47,7 +47,7 @@ export default function PlayerWorlds({ loaderData }: Route.ComponentProps) {
                 {world.name}
               </span>
               <span className="text-sm -mt-1 text-white/70 font-semibold leading-none">
-                by {world.owner}
+                készítő: {world.owner}
               </span>
 
               <div className="flex gap-4 justify-end items-center mt-auto pr-1 w-full font-semibold">
@@ -65,7 +65,7 @@ export default function PlayerWorlds({ loaderData }: Route.ComponentProps) {
         ))}
       </div>
 
-      {loaderData.worlds.length !== 0 && (
+      {loaderData.worlds.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-xl">
           <span className="text-2xl font-medium">Nincsenek még világok</span>
           <span className="text-sm -mt-1 text-white/70 font-semibold leading-tight">
