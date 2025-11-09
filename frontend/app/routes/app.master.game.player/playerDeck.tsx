@@ -104,7 +104,7 @@ const PlayerDeck = () => {
         Játékos gyűjteménye
       </h1>
 
-      <section className="w-[50em] h-[30em] border-2 border-gray-400 rounded-2xl grid grid-cols-5 p-6 gap-3">
+      <section className="w-[60em] h-[30em] border-2 border-gray-400 rounded-2xl grid grid-cols-5 p-6 gap-3">
         {playerDeck.map((e) => {
           return (
             <div className="relative h-[12em] items-center flex flex-col gap-2  justify-center">
@@ -139,7 +139,7 @@ const PlayerDeck = () => {
               <Plus></Plus>
             </div>
           </DialogTrigger>
-          <DialogContent className="w-full">
+          <DialogContent>
             <DialogHeader className="text-2xl font-bold">
               Gyűjteményed
             </DialogHeader>
