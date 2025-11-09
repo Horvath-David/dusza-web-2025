@@ -1,6 +1,6 @@
 import { createContext, useState, type ReactNode } from "react";
 
-export type ElementsType = "fire" | "earth" | "water" | "wind";
+export type ElementsType = "fire" | "earth" | "water" | "air";
 
 export interface CardType {
   id: number;
