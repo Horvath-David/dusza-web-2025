@@ -175,7 +175,7 @@ const DungeonCreator = () => {
 
   return (
     <main className="p-5">
-      <Link to={"/app/master"}>
+      <Link to={"/app/master/game"}>
         <Button className="absolute">
           <ArrowLeft></ArrowLeft>
           Vissza

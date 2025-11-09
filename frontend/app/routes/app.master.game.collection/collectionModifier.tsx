@@ -53,6 +53,8 @@ const CollectionModifier = () => {
 
   const [cardId, setCardId] = useState<number>(0);
 
+  useEffect(() => {}, []);
+
   const AddCard = () => {
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
 
@@ -165,18 +167,20 @@ const CollectionModifier = () => {
 
   return (
     <main className="p-5">
-      <Link to={"/app/master"}>
+      <Link to={"/app/master/game"}>
         <Button className="absolute">
           <ArrowLeft></ArrowLeft>
           Vissza
         </Button>
       </Link>
-      <h1 className="text-5xl font-bold text-center">
+      <h1 className="font-medium py-2 text-5xl text-center bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
         Hozd létre a gyűjteményed!
       </h1>
       <section className="flex flex-col items-center mt-7">
         <div className="flex flex-col gap-2">
-          <h2 className="text-xl">Gyűjteményed</h2>
+          <h2 className="font-medium text-xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
+            Gyűjteményed
+          </h2>
           <div className="w-[50em] h-[30em] border-2 border-white rounded-2xl grid grid-cols-4 p-7 gap-4 overflow-auto">
             {collection.map((e, idx) => {
               return (
