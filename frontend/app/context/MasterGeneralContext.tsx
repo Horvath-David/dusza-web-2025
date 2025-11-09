@@ -1,4 +1,4 @@
-import { createContext, useState, type ReactNode } from "react";
+import { createContext, useEffect, useState, type ReactNode } from "react";
 
 type MasterGeneralContextType = {
   worldId: number;
@@ -11,7 +11,18 @@ export const MasterGeneralContext = createContext<MasterGeneralContextType>({
 });
 
 const MasterGeneralContextProvider = (props: { children: ReactNode }) => {
-  const [worldId, setWorldId] = useState<number>(0);
+  const [worldId, setWorldId] = useState<number>(-1);
+
+  useEffect(() => {
+    // if (localStorage.getItem("world_id") !== undefined)
+    setWorldId(parseInt(localStorage.getItem("world_id")!));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("world_id", worldId.toString());
+    setWorldId(parseInt(localStorage.getItem("world_id")!));
+    console.log(localStorage.getItem("world_id"));
+  }, [worldId]);
 
   return (
     <MasterGeneralContext.Provider

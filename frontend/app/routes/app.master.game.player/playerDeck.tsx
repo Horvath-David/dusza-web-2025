@@ -54,10 +54,10 @@ const PlayerDeck = () => {
 
               <h2 className="text-md font-bold">{e.name}</h2>
               <p>
-                {e.attack}/{e.health}
+                {e.attack}/{e.hp}
               </p>
               <p>{e.type}</p>
-              <p>{e.isBoss && "(vezér)"}</p>
+              <p>{e.is_boss && "(vezér)"}</p>
             </div>
           );
         })}
@@ -78,13 +78,13 @@ const PlayerDeck = () => {
               Gyűjteményed
             </DialogHeader>
 
-            {collection.filter((n) => !playerDeck.includes(n) && !n.isBoss)
+            {collection.filter((n) => !playerDeck.includes(n) && !n.is_boss)
               .length < 1 ? (
               <h3>Nincs több kártyád a gyűjteményedben</h3>
             ) : (
               <div className="grid grid-cols-4 gap-3">
                 {collection
-                  .filter((n) => !playerDeck.includes(n) && !n.isBoss)
+                  .filter((n) => !playerDeck.includes(n) && !n.is_boss)
                   .map((e) => {
                     return (
                       <div
@@ -95,10 +95,10 @@ const PlayerDeck = () => {
                       >
                         <h2 className="text-lg font-bold">{e.name}</h2>
                         <p>
-                          {e.attack}/{e.health}
+                          {e.attack}/{e.hp}
                         </p>
                         <p>{e.type}</p>
-                        <p>{e.isBoss && "(vezér)"}</p>
+                        <p>{e.is_boss && "(vezér)"}</p>
                       </div>
                     );
                   })}

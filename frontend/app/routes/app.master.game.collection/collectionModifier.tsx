@@ -64,7 +64,6 @@ const CollectionModifier = () => {
     let health = cardHealth;
 
     if (isBossCard) {
-      console.log("jp");
       if (doubleDmg) {
         attack = attack * 2;
       } else {
@@ -82,10 +81,10 @@ const CollectionModifier = () => {
         cards: [
           {
             name: cardName,
-            hp: cardHealth,
-            attack: cardAttack,
+            hp: health,
+            attack: attack,
             type: cardElement,
-            isBoss: isBossCard,
+            is_boss: isBossCard,
           },
         ],
       }),
@@ -103,9 +102,9 @@ const CollectionModifier = () => {
       id: data.ids[0],
       name: cardName,
       attack: attack,
-      health: health,
+      hp: health,
       type: cardElement,
-      isBoss: isBossCard,
+      is_boss: isBossCard,
     };
 
     setCollection([...collection, card]);
@@ -118,17 +117,17 @@ const CollectionModifier = () => {
   const setModify = (id: number) => {
     setIsModify(true);
 
-    const card = collection[id];
+    const card = collection.filter((x) => x.id === id)[0];
     setCardId(id);
 
     setCardElement(card.type);
-    setCardHealth(card.health);
+    setCardHealth(card.hp);
     setCardAttack(card.attack);
     setCardName(card.name);
     setIsdialogOpen(true);
   };
 
-  const Modify = () => {
+  const Modify = async () => {
     console.log(cardId);
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
 
@@ -138,12 +137,27 @@ const CollectionModifier = () => {
       id: cardId,
       name: cardName,
       attack: cardAttack,
-      health: cardHealth,
+      hp: cardHealth,
       type: cardElement,
-      isBoss: false,
+      is_boss: false,
     };
 
     console.log(card);
+
+    const response = await fetch(API_URL + `/card/${cardId}/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(card),
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
 
     modifyCard(cardId, card);
 
@@ -216,10 +230,10 @@ const CollectionModifier = () => {
                 >
                   <h2 className="text-lg font-bold">{e.name}</h2>
                   <p className="text-md font-bold">
-                    {e.attack}/{e.health}
+                    {e.attack}/{e.hp}
                   </p>
                   <p>{e.type}</p>
-                  <p>{e.isBoss && "(vezér)"}</p>
+                  <p>{e.is_boss && "(vezér)"}</p>
                 </div>
               );
             })}
@@ -241,10 +255,11 @@ const CollectionModifier = () => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    if (checkForErrors()) return;
+
                     if (isModify) {
                       Modify();
                     } else {
+                      if (checkForErrors()) return;
                       AddCard();
                     }
                   }}

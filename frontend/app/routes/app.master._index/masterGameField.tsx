@@ -20,7 +20,11 @@ import {
 } from "~/components/ui/item";
 import { Separator } from "~/components/ui/separator";
 import { API_URL } from "~/constants";
-import { CardCollectionContext } from "~/context/CardCollectionContext";
+import {
+  CardCollectionContext,
+  type CardType,
+} from "~/context/CardCollectionContext";
+import { DungeonContext } from "~/context/DungeonContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 
 type WorldType = {
@@ -35,9 +39,11 @@ const MasterGameField = () => {
 
   const [gameName, setGameName] = useState<string>();
 
-  const { setWorldId } = useContext(MasterGeneralContext);
+  const { worldId, setWorldId } = useContext(MasterGeneralContext);
 
   const { setCollection } = useContext(CardCollectionContext);
+
+  const { setDungeons } = useContext(DungeonContext);
 
   const [allWorld, setAllWorld] = useState<WorldType[]>([]);
 
@@ -58,7 +64,21 @@ const MasterGameField = () => {
     });
   };
 
+  const OnModifyDungeon = async (id: number) => {
+    setWorldId(id);
+
+    getAllInfo(id);
+
+    localStorage.clear();
+
+    navi("game");
+  };
+
   const getAllInfo = async (id: number) => {
+    const vami = await parseInt(localStorage.getItem("world_id")!);
+
+    // if (vami < 0) setWorldId(-1);
+
     const response = await fetch(API_URL + `/world/${id}/cards`, {
       method: "GET",
       credentials: "include",
@@ -66,14 +86,30 @@ const MasterGameField = () => {
 
     const data = await response.json();
 
-    console.log(data);
-  };
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
 
-  const OnModifyDungeon = async (id: number) => {
-    setWorldId(id);
-    getAllInfo(id);
+    console.log(vami);
 
-    navi("game");
+    setCollection((prev) => [...prev, ...data.cards]);
+
+    const response2 = await fetch(API_URL + `/world/${id}/dungeons`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const data2 = await response.json();
+
+    if (!response2.ok) {
+      toast.error(data2.error);
+      return;
+    }
+
+    const atmeneti = [];
+
+    setDungeons((prev) => [...prev, ...data.dungeons]);
   };
 
   const OnWorldDelete = async (id: number) => {
