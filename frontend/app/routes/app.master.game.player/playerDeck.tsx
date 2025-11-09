@@ -16,6 +16,7 @@ import {
 } from "~/context/CardCollectionContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 import { PlayerDeckContext } from "~/context/playerCardContext";
+import { CardCard } from "../app.player.game.$id/card-card";
 
 const PlayerDeck = () => {
   const { collection } = useContext(CardCollectionContext);
@@ -106,7 +107,7 @@ const PlayerDeck = () => {
       <section className="w-[50em] h-[30em] border-2 border-gray-400 rounded-2xl grid grid-cols-5 p-6 gap-3">
         {playerDeck.map((e) => {
           return (
-            <div className="relative h-[12em] border-2 border-white rounded-2xl items-center flex flex-col gap-2 p-3 justify-center bg-white text-black">
+            <div className="relative h-[12em] items-center flex flex-col gap-2  justify-center">
               <button
                 type="button"
                 onClick={() => HandleDelete(e.id)}
@@ -115,12 +116,14 @@ const PlayerDeck = () => {
                 <X size={16} />
               </button>
 
-              <h2 className="text-md font-bold">{e.name}</h2>
+              <CardCard card={e}></CardCard>
+
+              {/* <h2 className="text-md font-bold">{e.name}</h2>
               <p>
                 {e.attack}/{e.hp}
               </p>
               <p>{e.type}</p>
-              <p>{e.is_boss && "(vezér)"}</p>
+              <p>{e.is_boss && "(vezér)"}</p> */}
             </div>
           );
         })}
@@ -128,7 +131,7 @@ const PlayerDeck = () => {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger className="h-fit">
             <div
-              className="border-2 border-white h-[12em] rounded-2xl flex justify-center transition duration-1000 items-center hover:bg-white hover:text-black"
+              className="border-2 border-white h-[12em]  rounded-2xl flex justify-center transition duration-1000 items-center hover:bg-white hover:text-black"
               onClick={() => {
                 // setIsCardSelect(true);
               }}
@@ -136,7 +139,7 @@ const PlayerDeck = () => {
               <Plus></Plus>
             </div>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="w-full">
             <DialogHeader className="text-2xl font-bold">
               Gyűjteményed
             </DialogHeader>
@@ -146,25 +149,26 @@ const PlayerDeck = () => {
             ).length < 1 ? (
               <h3>Nincs több kártyád a gyűjteményedben</h3>
             ) : (
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-3 gap-3 overflow-auto">
                 {collection
                   .filter(
                     (n) => !playerDeck.some((c) => c.id === n.id) && !n.is_boss
                   )
                   .map((e) => {
                     return (
-                      <div
-                        className="border-2 border-white rounded-2xl items-center flex flex-col gap-2 p-2 bg-white text-black"
-                        onClick={() => {
-                          AddCardToPlayer(e.id);
-                        }}
-                      >
-                        <h2 className="text-lg font-bold">{e.name}</h2>
+                      <div className=" items-center flex flex-col gap-2">
+                        <CardCard
+                          card={e}
+                          onClick={() => {
+                            AddCardToPlayer(e.id);
+                          }}
+                        ></CardCard>
+                        {/* <h2 className="text-lg font-bold">{e.name}</h2>
                         <p>
                           {e.attack}/{e.hp}
                         </p>
                         <p>{e.type}</p>
-                        <p>{e.is_boss && "(vezér)"}</p>
+                        <p>{e.is_boss && "(vezér)"}</p> */}
                       </div>
                     );
                   })}
