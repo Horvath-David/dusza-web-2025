@@ -239,7 +239,7 @@ const DungeonCreator = () => {
   return (
     <main className="p-5">
       <Link to={"/app/master/game"}>
-        <Button className="absolute" variant={"outline"}>
+        <Button className="absolute top-[90%] left-[1%]" variant={"outline"}>
           <ArrowLeft></ArrowLeft>
           Vissza
         </Button>
@@ -256,7 +256,13 @@ const DungeonCreator = () => {
                   <Item>
                     <ItemContent>
                       <ItemTitle>{e.name}</ItemTitle>
-                      <ItemDescription>{e.type}</ItemDescription>
+                      <ItemDescription>
+                        {e.type === "basic"
+                          ? "Egyszerű találkozás"
+                          : e.type === "small"
+                            ? "Kis kazamata"
+                            : "Nagy kazamata"}
+                      </ItemDescription>
                     </ItemContent>
                     <ItemActions>
                       <Button
@@ -288,7 +294,7 @@ const DungeonCreator = () => {
           <DialogTrigger>
             <Button className="w-full">
               <Plus></Plus>
-              Új kazamta létrehozzása
+              Új kazamata létrehozzása
             </Button>
           </DialogTrigger>
           <DialogContent className="min-w-[60%] min-h-[60%]">
@@ -407,7 +413,7 @@ const DungeonCreator = () => {
                         })}
                         {BigCheck() ? (
                           <div
-                            className="border-2 border-white rounded-2xl flex justify-center h-20 items-center hover:bg-white hover:text-black"
+                            className="border-2 border-white rounded-2xl flex justify-center h-full min-h-48 items-center hover:bg-white hover:text-black"
                             onClick={() => {
                               setIsCardSelect(true);
                             }}

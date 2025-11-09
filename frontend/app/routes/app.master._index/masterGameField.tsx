@@ -1,4 +1,11 @@
-import { FileStack, Pencil, Plus, Swords, Trash } from "lucide-react";
+import {
+  ArrowLeft,
+  FileStack,
+  Pencil,
+  Plus,
+  Swords,
+  Trash,
+} from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -169,6 +176,12 @@ const MasterGameField = () => {
 
   return (
     <main className="flex flex-col items-center">
+      <Link to={"/app/"}>
+        <Button className="absolute top-[90%] left-[1%]" variant={"outline"}>
+          <ArrowLeft></ArrowLeft>
+          Vissza
+        </Button>
+      </Link>
       <h1 className="font-medium mt-8 py-2 text-3xl text-center bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
         Üdvözlünk a játékaid között
       </h1>

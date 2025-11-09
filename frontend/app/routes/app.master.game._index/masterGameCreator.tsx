@@ -1,4 +1,4 @@
-import { Book, Castle, Scroll } from "lucide-react";
+import { ArrowLeft, Book, Castle, Scroll } from "lucide-react";
 import { useContext, useEffect } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -8,6 +8,12 @@ import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 const MasterGameCreator = () => {
   return (
     <main className="h-full flex flex-col">
+      <Link to={"/app/master/"}>
+        <Button className="absolute top-[90%] left-[1%]" variant={"outline"}>
+          <ArrowLeft></ArrowLeft>
+          Vissza
+        </Button>
+      </Link>
       <div className="h-full w-full flex-1"></div>
 
       <h1 className="font-medium py-2 text-5xl text-center bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">

@@ -225,7 +225,7 @@ const CollectionModifier = () => {
   return (
     <main className="p-5">
       <Link to={"/app/master/game"}>
-        <Button className="absolute">
+        <Button className="absolute top-[90%] left-[1%]" variant={"outline"}>
           <ArrowLeft></ArrowLeft>
           Vissza
         </Button>
