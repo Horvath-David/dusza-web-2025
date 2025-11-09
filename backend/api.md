@@ -131,6 +131,7 @@
                         hp: number
                         attack: number
                         type: fire|earth|water|air
+                        is_boss: bool
             response:
                 skipped: # Cards that were not created
                     -   name: string          # Skipped card's name
