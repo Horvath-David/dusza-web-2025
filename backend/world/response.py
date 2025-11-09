@@ -68,7 +68,7 @@ def edit_world(request: WSGIRequest, world_id):
         }, status=403)
 
     try:
-        body = json.loads(request.body)
+        body: dict = json.loads(request.body)
     except JSONDecodeError:
         return JsonResponse({"error": "Bad request"}, status=400)
 
@@ -80,7 +80,7 @@ def edit_world(request: WSGIRequest, world_id):
         world_obj.is_public = body.get("is_public")
     if body.get("is_playable") is not None:
         world_obj.is_playable = body.get("is_playable")
-    if body.get("player_cards"):
+    if "player_cards" in body.keys():
         if len(set(body.get("player_cards"))) == len(body.get("player_cards")):
             cards = []
             dirty = False
