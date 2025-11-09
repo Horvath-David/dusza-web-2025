@@ -41,6 +41,12 @@
                         is_playable: bool   # True if world can be played (potentially unused)
                         dungeons: number    # Number of dungeons in the world
                         cards: number       # Number of cards in the world
+                        player_cards:
+                            -   id: number
+                                name: string
+                                hp: number
+                                attack: number
+                                type: fire|earth|water|air
         
         /my:
             method: GET
@@ -59,6 +65,7 @@
                     is_public: bool
                     dungeons: number        # The number of dungeons in this world
                     cards: number           # The number of cards in this world
+                    player_cards: Same schema as /all player_cards
 
         /<world_id>/update:
             method: PATCH
@@ -103,6 +110,17 @@
                                 type: fire|earth|water|air
     
     /card:
+        /<card_id>:
+            method: GET
+            description: Get a card based on ID
+            response:
+                card:
+                    id: number
+                    name: string
+                    hp: number
+                    attack: number
+                    type: fire|earth|water|air
+                    
         /create:
             method: POST
             description: Add new cards to a world
