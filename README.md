@@ -30,7 +30,7 @@ Ez az útmutató az alkalmazás felületének használatát mutatja be. Két fő
 ### Kazamaták kezelése
 - Lista: a „Kazamaták” nézet a meglévő kazamatákat sorolja (név, típus).
 - Új kazamata:
-  1. „Új kazamta létrehozzása”.
+  1. „Új kazamata létrehozzása”.
   2. Add meg: Név, Típus:
      - Egyszerű találkozás (basic)
      - Kis kazamata (small)
