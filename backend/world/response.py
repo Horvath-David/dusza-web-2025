@@ -82,7 +82,18 @@ def edit_world(request: WSGIRequest, world_id):
         world_obj.is_playable = body.get("is_playable")
     if body.get("player_cards"):
         if len(set(body.get("player_cards"))) == len(body.get("player_cards")):
-            world_obj.player_cards = body.get("player_cards")
+            cards = []
+            dirty = False
+            for i in body.get("player_cards"):
+                if Card.objects.filter(id=i, world=world_obj).exists():
+                    cards.append(Card.objects.get(id=i))
+                else:
+                    dirty = True
+                    break
+            if not dirty:
+                world_obj.player_cards = cards
+                additional_message = "A játékos kártyák nem kerültek mentésre mert nem létező kártya volt a listában"
+
         else:
             additional_message = "A játékos kártyák nem kerültek mentésre mert duplikátum volt a listában"
     world_obj.save()
@@ -105,6 +116,13 @@ def get_worlds(request: WSGIRequest):
             "is_playable": i.is_playable,
             "dungeons": Dungeon.objects.filter(world=i).count(),
             "cards": Card.objects.filter(world=i).count(),
+            "player_cards": [{
+                "id": x.id,
+                "name": x.name,
+                "hp": x.attack,
+                "attack": x.attack,
+                "type": x.type,
+            } for x in Card.objects.filter(id__in=i.player_cards)],
         } for i in worlds]
     })
 
@@ -123,6 +141,13 @@ def get_my_worlds(request: WSGIRequest):
             "is_playable": i.is_playable,
             "dungeons": Dungeon.objects.filter(world=i).count(),
             "cards": Card.objects.filter(world=i).count(),
+            "player_cards": [{
+                "id": x.id,
+                "name": x.name,
+                "hp": x.attack,
+                "attack": x.attack,
+                "type": x.type,
+            } for x in Card.objects.filter(id__in=i.player_cards)],
         } for i in worlds]
     })
 
@@ -137,7 +162,6 @@ def get_world_by_id(request: WSGIRequest, world_id):
         }, status=404)
 
     world_obj = World.objects.get(id=world_id)
-
     return JsonResponse({
         "status": "Ok",
         "world": {
@@ -148,6 +172,13 @@ def get_world_by_id(request: WSGIRequest, world_id):
             "is_public": world_obj.is_public,
             "dungeons": Dungeon.objects.filter(world=world_obj).count(),
             "cards": Card.objects.filter(world=world_obj).count(),
+            "player_cards": [{
+                "id": i.id,
+                "name": i.name,
+                "hp": i.attack,
+                "attack": i.attack,
+                "type": i.type,
+            } for i in Card.objects.filter(id__in=world_obj.player_cards)],
         }
     })
 

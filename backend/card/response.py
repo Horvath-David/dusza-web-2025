@@ -114,3 +114,24 @@ def delete_card(request: WSGIRequest, card_id):
     return JsonResponse({
         "status": "Ok"
     }, status=200)
+
+
+@wrappers.login_required()
+@require_http_methods(["GET"])
+def get_card_by_id(request: WSGIRequest, card_id):
+    if not Card.objects.filter(id=card_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a kártya nem létezik"
+        }, status=404)
+    card = Card.objects.get(id=card_id)
+    return JsonResponse({
+        "status": "Ok",
+        "card": {
+            "id": card.id,
+            "name": card.name,
+            "hp": card.hp,
+            "attack": card.attack,
+            "type": card.type,
+        }
+    })
