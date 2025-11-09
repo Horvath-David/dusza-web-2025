@@ -67,6 +67,9 @@
                 name: string
                 is_playable: bool
                 is_public: bool
+                player_cards: [ number ]    # A list of IDs for player cards
+            returns:
+                message: An error if the player cards were ignored because of a duplicate. General success message if no duplicates were found
                 
         /<world_id>/delete:
             method: DELETE

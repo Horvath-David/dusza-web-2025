@@ -72,15 +72,23 @@ def edit_world(request: WSGIRequest, world_id):
     except JSONDecodeError:
         return JsonResponse({"error": "Bad request"}, status=400)
 
+    additional_message = "Sikeres mentés"
+
     if body.get("name"):
         world_obj.name = body.get("name")
     if body.get("is_public") is not None:
         world_obj.is_public = body.get("is_public")
     if body.get("is_playable") is not None:
         world_obj.is_playable = body.get("is_playable")
+    if body.get("player_cards"):
+        if len(set(body.get("player_cards"))) == len(body.get("player_cards")):
+            world_obj.player_cards = body.get("player_cards")
+        else:
+            additional_message = "A játékos kártyák nem kerültek mentésre mert duplikátum volt a listában"
     world_obj.save()
     return JsonResponse({
-        "status": "Ok"
+        "status": "Ok",
+        "message": additional_message,
     }, status=200)
 
 
