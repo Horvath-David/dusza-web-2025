@@ -64,6 +64,15 @@ export default function PlayerWorlds({ loaderData }: Route.ComponentProps) {
           </div>
         ))}
       </div>
+
+      {loaderData.worlds.length !== 0 && (
+        <div className="flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-xl">
+          <span className="text-2xl font-medium">Nincsenek még világok</span>
+          <span className="text-sm -mt-1 text-white/70 font-semibold leading-tight">
+            Nézz vissza később, vagy alkoss egy újat a játékmester nézetben!
+          </span>
+        </div>
+      )}
     </div>
   );
 }

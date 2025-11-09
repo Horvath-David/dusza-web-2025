@@ -73,7 +73,7 @@ export default function PlayerIndex({ loaderData }: Route.ComponentProps) {
       {loaderData.worlds.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-xl">
           <span className="text-2xl font-medium">Nincsenek még világok</span>
-          <span className="text-sm -mt-1 text-white/70 font-semibold leading-none">
+          <span className="text-sm -mt-1 text-white/70 font-semibold leading-tight">
             Nézz vissza később, vagy alkoss egy újat a játékmester nézetben!
           </span>
         </div>
@@ -137,7 +137,7 @@ export default function PlayerIndex({ loaderData }: Route.ComponentProps) {
           <span className="text-2xl font-medium">
             Nincsenek mentett játékok
           </span>
-          <span className="text-sm -mt-1 text-white/70 font-semibold leading-none">
+          <span className="text-sm -mt-1 text-white/70 font-semibold leading-tight">
             Kezdj el játszani egy világgal!
           </span>
         </div>
