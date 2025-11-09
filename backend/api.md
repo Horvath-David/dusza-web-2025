@@ -46,6 +46,19 @@
             method: GET
             description: Get all worlds created by the authenticated user
             response:  Same schema as /all
+            
+        /<world_id>:
+            method: GET
+            description: Request a world's data using its ID
+            response:
+                world:
+                    id: number
+                    name: string
+                    owner: string
+                    is_playable: bool
+                    is_public: bool
+                    dungeons: number        # The number of dungeons in this world
+                    cards: number           # The number of cards in this world
         
         /<world_id>/cards:
             method: GET
@@ -141,6 +154,20 @@
                             type: fire|earth|water|air
     
     /state:
+        /my: 
+            method: GET
+            description: Get all game states owned by the authenticated user
+            response:
+                game_state:
+                    -   id: number
+                        owner: string
+                        world:
+                            id: number
+                            name: string
+                            owner: string
+                        state: json
+                        created_at: ISO timestamp
+                        last_updated_at: ISO timestamp
         /save:
             method: PUT
             description: Upload a game state to be saved for later use
@@ -156,9 +183,13 @@
             method: GET
             description: Request a saved game state
             response:
-                world_id: number
+                id: number
+                owner: string
+                world:
+                    id: number
+                    name: string
+                    owner: string
                 state: json
-                world_name: string        # The world's name associated with this save
                 created_at: ISO timestamp
                 last_updated_at: ISO timestamp
 
