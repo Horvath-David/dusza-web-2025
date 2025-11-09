@@ -1,5 +1,7 @@
 import {
   createContext,
+  useEffect,
+  useMemo,
   useState,
   type Dispatch,
   type ReactNode,
@@ -26,15 +28,32 @@ export const DungeonContext = createContext<DungeonContextType>({
   setDungeons: () => {},
 });
 
+const STORAGE_KEY = "dungeons";
+
 const DungeonContextProvider = (props: { children: ReactNode }) => {
-  const [dungeons, setDungeons] = useState<DungeonType[]>([]);
+  const [dungeons, setDungeons] = useState<DungeonType[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as DungeonType[]) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(dungeons));
+    } catch {
+      // ignore
+    }
+  }, [dungeons]);
+
+  const value = useMemo(() => ({ dungeons, setDungeons }), [dungeons]);
+
   return (
-    <DungeonContext.Provider
-      value={{
-        dungeons,
-        setDungeons,
-      }}
-    >
+    <DungeonContext.Provider value={value}>
       {props.children}
     </DungeonContext.Provider>
   );
