@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 type MasterGeneralContextType = {
   worldId: number;
@@ -10,27 +10,33 @@ export const MasterGeneralContext = createContext<MasterGeneralContextType>({
   setWorldId: () => {},
 });
 
+const STORAGE_KEY = "world_id";
+
 const MasterGeneralContextProvider = (props: { children: ReactNode }) => {
-  const [worldId, setWorldId] = useState<number>(-1);
+  const [worldId, setWorldId] = useState<number>(() => {
+    if (typeof window === "undefined") return -1;
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const parsed = raw !== null ? Number.parseInt(raw, 10) : NaN;
+    return Number.isFinite(parsed) ? parsed : -1;
+  });
 
   useEffect(() => {
-    // if (localStorage.getItem("world_id") !== undefined)
-    setWorldId(parseInt(localStorage.getItem("world_id")!));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("world_id", worldId.toString());
-    setWorldId(parseInt(localStorage.getItem("world_id")!));
-    console.log(localStorage.getItem("world_id"));
+    if (typeof window === "undefined") return;
+    // Only persist valid values
+    if (Number.isFinite(worldId)) {
+      window.localStorage.setItem(STORAGE_KEY, String(worldId));
+    } else {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
   }, [worldId]);
 
+  const value = useMemo(
+    () => ({ worldId, setWorldId }),
+    [worldId]
+  );
+
   return (
-    <MasterGeneralContext.Provider
-      value={{
-        worldId,
-        setWorldId,
-      }}
-    >
+    <MasterGeneralContext.Provider value={value}>
       {props.children}
     </MasterGeneralContext.Provider>
   );

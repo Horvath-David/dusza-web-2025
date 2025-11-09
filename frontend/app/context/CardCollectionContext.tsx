@@ -1,6 +1,7 @@
 import {
   createContext,
   useEffect,
+  useMemo,
   useState,
   type Dispatch,
   type ReactNode,
@@ -32,33 +33,39 @@ export const CardCollectionContext = createContext<CardCollectionContextType>({
   modifyCard: () => {},
 });
 
+const STORAGE_KEY = "collection";
+
 const CardCollectionContextProvider = (props: { children: ReactNode }) => {
-  const [collection, setCollection] = useState<CardType[]>([]);
+  const [collection, setCollection] = useState<CardType[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as CardType[]) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const modifyCard = (id: number, card: CardType) => {
-    setCollection((prevCard) => {
-      const newCards = prevCard.map((x) => (x.id === id ? card : x));
-      return newCards;
-    });
+    setCollection((prev) => prev.map((x) => (x.id === id ? card : x)));
   };
 
-  // useEffect(() => {
-  //   if (!localStorage.getItem("collection")) return;
-  //   setCollection(JSON.parse(localStorage.getItem("collection")!));
-  // }, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(collection));
+    } catch {
+      // ignore quota errors
+    }
+  }, [collection]);
 
-  // useEffect(() => {
-  //   localStorage.setItem("collection", JSON.stringify(collection));
-  // }, [collection]);
+  const value = useMemo(
+    () => ({ collection, setCollection, modifyCard }),
+    [collection]
+  );
 
   return (
-    <CardCollectionContext.Provider
-      value={{
-        collection,
-        setCollection,
-        modifyCard,
-      }}
-    >
+    <CardCollectionContext.Provider value={value}>
       {props.children}
     </CardCollectionContext.Provider>
   );
