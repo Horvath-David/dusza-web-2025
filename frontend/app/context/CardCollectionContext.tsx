@@ -36,15 +36,7 @@ export const CardCollectionContext = createContext<CardCollectionContextType>({
 const STORAGE_KEY = "collection";
 
 const CardCollectionContextProvider = (props: { children: ReactNode }) => {
-  const [collection, setCollection] = useState<CardType[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as CardType[]) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [collection, setCollection] = useState<CardType[]>([]);
 
   const modifyCard = (id: number, card: CardType) => {
     setCollection((prev) => prev.map((x) => (x.id === id ? card : x)));
@@ -54,9 +46,7 @@ const CardCollectionContextProvider = (props: { children: ReactNode }) => {
     if (typeof window === "undefined") return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(collection));
-    } catch {
-      // ignore quota errors
-    }
+    } catch {}
   }, [collection]);
 
   const value = useMemo(
