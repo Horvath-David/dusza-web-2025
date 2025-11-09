@@ -415,7 +415,7 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
             Válaszd ki, hogy melyik kártyádat szeretnéd fejleszteni!
           </span>
 
-          <div className="text-lg px-4 py-2 bg-white/5 border border-white/20 rounded-xl w-full h-full flex justify-center items-center">
+          <div className="text-lg px-4 py-2 bg-white/5 border border-white/20 rounded-xl gap-2 w-full h-full flex justify-center items-center">
             Jutalmad:
             {activeDungeon?.type === "basic" ? (
               <span className="flex gap-1 items-center font-semibold">
@@ -446,17 +446,32 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
       )}
 
       {game.state.phase === "loser" && (
-        <div className="flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-xl">
-          <span className="text-2xl font-medium">
-            {game.state.phaseData?.winner === "player"
-              ? "A játékos"
-              : "A játékmester"}
-          </span>
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-xl">
+          <h1 className="font-medium mt-8 py-2 text-4xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
+            Vesztettél!
+          </h1>
           <span className="text-sm -mt-1 text-white/70 font-semibold leading-tight">
-            {game.state.phaseData?.winner === "player"
-              ? "A játékos csapatnak elvesztette a világot!"
-              : "A játékmester elvesztette a világot!"}
+            Nem jártál sikerrel, ezért most nem kapsz jutalmakat. Viszont
+            bármikor újrapróbálhatod!
           </span>
+
+          <div className="w-full flex justify-center items-center">
+            <Button
+              size={"lg"}
+              onClick={() =>
+                setGame((prev) => ({
+                  ...prev,
+                  state: {
+                    ...prev.state,
+                    phase: "deck",
+                  },
+                }))
+              }
+            >
+              <FileStack />
+              Vissza a gyűjteményedhez
+            </Button>
+          </div>
         </div>
       )}
     </div>
