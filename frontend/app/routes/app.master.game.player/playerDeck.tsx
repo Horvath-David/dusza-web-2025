@@ -95,7 +95,7 @@ const PlayerDeck = () => {
   return (
     <main className="flex flex-col items-center justify-center p-10 gap-2">
       <Link to={"/app/master/game"}>
-        <Button className="absolute top-[10%] left-[1%]" variant={"outline"}>
+        <Button className="absolute top-[90%] left-[1%]" variant={"outline"}>
           <ArrowLeft></ArrowLeft>
           Vissza
         </Button>
