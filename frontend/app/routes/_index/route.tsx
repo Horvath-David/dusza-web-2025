@@ -15,8 +15,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { API_URL } from "~/constants";
-import type { Route } from "./+types/route";
 import { cn } from "~/lib/utils";
+import type { Route } from "./+types/route";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Bejelentkezés | Damareen" }];
@@ -35,8 +35,6 @@ export async function clientLoader() {
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
-
-  console.log(Object.fromEntries(formData));
 
   try {
     if (formData.get("signUp") === "true") {
@@ -103,7 +101,6 @@ export default function Home({ actionData }: Route.ComponentProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log(actionData);
     if (actionData?.ok) {
       navigate("/app");
     }

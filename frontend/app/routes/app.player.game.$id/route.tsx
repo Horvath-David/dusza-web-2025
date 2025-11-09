@@ -1,63 +1,58 @@
-import { FileStack, Swords } from "lucide-react";
+import { FileStack, Loader2, Swords } from "lucide-react";
 import { API_URL } from "~/constants";
 import { cn } from "~/lib/utils";
-import type { World } from "~/models";
+import type { GameStateResponse } from "~/models";
 import type { Route } from "./+types/route";
 
-export async function clientLoader() {
-  const res = await fetch(`${API_URL}/world/all`, {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const res = await fetch(`${API_URL}/state/${params.id}`, {
     method: "GET",
     credentials: "include",
   });
-  const worlds = (await res.json()).worlds as World[];
+  const game = (await res.json()).game_state as GameStateResponse;
 
-  return { worlds };
+  return { game };
 }
 
-const randomColors = [
-  "bg-gradient-to-r from-green-800 to-red-700",
-  "bg-gradient-to-br from-violet-800 to-red-700",
-  "bg-gradient-to-tr from-blue-800 to-yellow-800",
-  "bg-gradient-to-bl from-cyan-700 to-blue-800",
-  "bg-gradient-to-tl from-pink-700 to-orange-800",
-  "bg-gradient-to-tl from-lime-800 to-cyan-700",
-  "bg-gradient-to-b from-purple-800 to-blue-800",
-  "bg-gradient-to-tr from-green-700 to-red-800",
-  "bg-gradient-to-br from-blue-800 to-cyan-800",
-];
+export default function PlayerGame({ loaderData }: Route.ComponentProps) {
+  if (!loaderData.game) {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
+  }
 
-export default function PlayerWorlds({ loaderData }: Route.ComponentProps) {
   return (
     <div className="p-4 max-w-5xl w-full h-full mx-auto flex flex-col gap-4">
       <h1 className="font-medium mt-8 py-2 text-3xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
-        Összes felfedezhető világ
+        Játék megtekintése
       </h1>
 
-      <div className="grid grid-cols-5 gap-4 pb-8">
-        {loaderData.worlds.map((world, i) => (
+      <div className="grid grid-cols-5 gap-4">
+        {loaderData.game.state.cards.map((card, i) => (
           <div
-            key={world.id}
+            key={card.id}
             className={cn(
-              "bg-linear-to-bl h-56 from-green-500 to-red-500 rounded-xl w-full hover:brightness-110",
-              randomColors[i % randomColors.length]
+              "bg-linear-to-bl h-56 from-green-500 to-red-500 rounded-xl w-full hover:brightness-110"
             )}
           >
             <div className="border border-white/20 cursor-pointer w-full h-full p-3 flex flex-col items-start justify-start gap-2 overflow-hidden bg-clip-padding rounded-xl">
               <span className="text-xl font-medium leading-none">
-                {world.name}
+                {card.name}
               </span>
               <span className="text-sm -mt-1 text-white/70 font-semibold leading-none">
-                by {world.owner}
+                by {card.type}
               </span>
 
               <div className="flex gap-4 justify-end items-center mt-auto pr-1 w-full font-semibold">
                 <div className="flex gap-1 items-center">
                   <FileStack size={20} />
-                  {world.cards}
+                  {card.is_boss}
                 </div>
                 <div className="flex gap-1 items-center">
                   <Swords size={20} />
-                  {world.dungeons}
+                  {card.hp}
                 </div>
               </div>
             </div>

@@ -1,9 +1,9 @@
 import { Outlet, redirect } from "react-router";
 import { Header } from "~/components/header";
+import { API_URL } from "~/constants";
 import { UserContextProvider } from "~/context/UserContext";
 import type { UserMe } from "~/models";
 import type { Route } from "./+types/route";
-import { API_URL } from "~/constants";
 
 export async function clientLoader() {
   const res = await fetch(`${API_URL}/auth/me`, {

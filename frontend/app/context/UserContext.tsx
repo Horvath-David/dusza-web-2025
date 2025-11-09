@@ -1,9 +1,9 @@
 import {
-    createContext,
-    useState,
-    type Dispatch,
-    type ReactNode,
-    type SetStateAction
+  createContext,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
 } from "react";
 import type { UserMe } from "~/models";
 
