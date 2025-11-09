@@ -34,7 +34,18 @@ def create_world(request: WSGIRequest):
 @wrappers.login_required()
 @require_http_methods(["DELETE"])
 def delete_world(request: WSGIRequest, world_id):
-    World.objects.filter(id=world_id).delete()
+    if not World.objects.filter(id=world_id).exists():
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez a világ nem létezik"
+        }, status=404)
+    world_obj = World.objects.get(id=world_id)
+    if world_obj.owner != request.user:
+        return JsonResponse({
+            "status": "Error",
+            "error": "Ez nem a te világod"
+        }, status=403)
+    world_obj.delete()
     return JsonResponse({
         "status": "Ok"
     }, status=200)
