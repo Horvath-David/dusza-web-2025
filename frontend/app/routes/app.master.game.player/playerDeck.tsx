@@ -12,10 +12,12 @@ import {
   CardCollectionContext,
   type CardType,
 } from "~/context/CardCollectionContext";
+import { PlayerDeckContext } from "~/context/playerCardContext";
 
 const PlayerDeck = () => {
   const { collection } = useContext(CardCollectionContext);
-  const [playerDeck, setPlayerDeck] = useState<CardType[]>([]);
+  // const [playerDeck, setPlayerDeck] = useState<CardType[]>([]);
+  const { playerDeck, setPlayerDeck } = useContext(PlayerDeckContext);
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 

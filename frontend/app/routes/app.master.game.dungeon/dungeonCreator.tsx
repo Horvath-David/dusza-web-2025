@@ -63,6 +63,10 @@ const DungeonCreator = () => {
     setIsCardSelect(false);
   };
 
+  useEffect(() => {
+    console.log(dungeons);
+  }, []);
+
   const AddDungeon = async () => {
     if (!dungeoName || !dungeonType) return;
 
@@ -118,7 +122,7 @@ const DungeonCreator = () => {
   const HandleOnModify = (id: number) => {
     setIsModifying(true);
 
-    const dungeon = dungeons[id];
+    const dungeon = dungeons.filter((e) => e.id === id)[0];
     setDungeoName(dungeon.name);
     setDungeonType(dungeon.type);
 
@@ -132,7 +136,7 @@ const DungeonCreator = () => {
     setIsDialogOpen(true);
   };
 
-  const ChangeDungeon = () => {
+  const ChangeDungeon = async () => {
     if (!dungeoName || !dungeonType) return;
 
     const cards: number[] = [];
@@ -145,8 +149,23 @@ const DungeonCreator = () => {
       name: dungeoName,
       type: dungeonType,
       cards: cards,
-      world_id: 0,
+      world_id: worldId,
     };
+
+    const response = await fetch(API_URL + `/dungeon/${dunId}/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dungeon),
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      toast.error(data.error);
+      return;
+    }
     const newDun = dungeons.map((x) => (x.id === dunId ? dungeon : x));
     setDungeons(newDun);
     setIsModifying(false);
