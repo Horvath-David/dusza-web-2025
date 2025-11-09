@@ -136,6 +136,7 @@
                 skipped: # Cards that were not created
                     -   name: string          # Skipped card's name
                         reason: string        # Reason for skipping
+                ids: [ number] # A list of newly created cards' IDs
         
         /<card_id>/update:
             method: PATCH
