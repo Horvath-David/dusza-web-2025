@@ -176,12 +176,14 @@ const DungeonCreator = () => {
   return (
     <main className="p-5">
       <Link to={"/app/master/game"}>
-        <Button className="absolute">
+        <Button className="absolute" variant={"outline"}>
           <ArrowLeft></ArrowLeft>
           Vissza
         </Button>
       </Link>
-      <h1 className="text-5xl font-bold text-center">Kazamaták</h1>
+      <h1 className="font-medium text-5xl text-center bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
+        Kazamaták
+      </h1>
       <section className="max-w-[50%] m-auto mt-10 flex flex-col gap-8">
         <ScrollArea className=" max-h-[25em]  border-2 border-gray-500 rounded-2xl p-2 overflow-auto">
           {dungeons.length > 0 ? (

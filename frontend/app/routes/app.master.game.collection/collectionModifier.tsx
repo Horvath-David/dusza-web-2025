@@ -29,16 +29,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { API_URL } from "~/constants";
 import {
   CardCollectionContext,
   type CardType,
   type ElementsType,
 } from "~/context/CardCollectionContext";
+import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 
 const CollectionModifier = () => {
   const { collection, setCollection, modifyCard } = useContext(
     CardCollectionContext
   );
+
+  const { worldId } = useContext(MasterGeneralContext);
 
   const [cardElement, setCardElement] = useState<ElementsType>();
   const [cardName, setCardName] = useState<string>();
@@ -55,7 +59,7 @@ const CollectionModifier = () => {
 
   useEffect(() => {}, []);
 
-  const AddCard = () => {
+  const AddCard = async () => {
     if (!cardElement || !cardName || !cardAttack || !cardHealth) return;
 
     let attack = cardAttack;
@@ -70,6 +74,33 @@ const CollectionModifier = () => {
       }
     }
 
+    // const response = await fetch(API_URL + "/card/create", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     worldId: worldId,
+    //     cards: [
+    //       {
+    //         name: cardName,
+    //         hp: cardHealth,
+    //         attack: cardAttack,
+    //         type: cardElement,
+    //         isBoss: isBossCard,
+    //       },
+    //     ],
+    //   }),
+    //   credentials: "include",
+    // });
+
+    // if (!response.ok) {
+    //   toast.error("Valami nem sikerült");
+    //   return;
+    // }
+
+    // const data = await response.json();
+
     const card: CardType = {
       id:
         collection[collection.length - 1] !== undefined
@@ -81,8 +112,6 @@ const CollectionModifier = () => {
       type: cardElement,
       isBoss: isBossCard,
     };
-
-    console.log(collection[1]);
 
     setCollection([...collection, card]);
 
@@ -322,7 +351,7 @@ const CollectionModifier = () => {
                                   <SelectItem value="fire">Tűz</SelectItem>
                                   <SelectItem value="water">Víz</SelectItem>
                                   <SelectItem value="earth">Föld</SelectItem>
-                                  <SelectItem value="wind">Szél</SelectItem>
+                                  <SelectItem value="air">Szél</SelectItem>
                                 </SelectGroup>
                               </SelectContent>
                             </Select>
