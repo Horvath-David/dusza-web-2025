@@ -39,9 +39,10 @@ import {
 } from "~/context/DungeonContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 import { useGetAllInfo } from "~/helpers";
+import { CardCard } from "../app.player.game.$id/card-card";
 
 const DungeonCreator = () => {
-     const getAllInfo = useGetAllInfo();
+  const getAllInfo = useGetAllInfo();
   const { dungeons, setDungeons } = useContext(DungeonContext);
   const { collection } = useContext(CardCollectionContext);
   const { worldId } = useContext(MasterGeneralContext);
@@ -109,7 +110,7 @@ const DungeonCreator = () => {
 
     setDungeons([...dungeons, dungeon]);
     setIsDialogOpen(false);
-    await getAllInfo(worldId)
+    await getAllInfo(worldId);
     toast.success("Sikeres kazamata létrehozzás");
   };
 
@@ -132,7 +133,7 @@ const DungeonCreator = () => {
       return;
     }
     setDungeons(dungeons.filter((x) => x.id !== id));
-    await getAllInfo(worldId)
+    await getAllInfo(worldId);
     toast.success("Sikeres kazamata törlés");
   };
 
@@ -186,7 +187,7 @@ const DungeonCreator = () => {
     const newDun = dungeons.map((x) => (x.id === dunId ? dungeon : x));
     setDungeons(newDun);
     setIsModifying(false);
-    await getAllInfo(worldId)
+    await getAllInfo(worldId);
     toast.success("Sikeres módosítás");
     setIsDialogOpen(false);
   };
@@ -307,7 +308,7 @@ const DungeonCreator = () => {
                     Nincs elég kártya a gyűjteményedben!
                   </h1>
                 ) : (
-                  <section className="grid grid-cols-4 gap-3 overflow-auto">
+                  <section className="grid grid-cols-5 gap-3 overflow-auto">
                     {collection
                       .filter(
                         (x) =>
@@ -316,18 +317,13 @@ const DungeonCreator = () => {
                       )
                       .map((e) => {
                         return (
-                          <div
-                            className="border-2 border-white rounded-2xl items-center flex flex-col gap-2 p-2 bg-white text-black"
-                            onClick={() => {
-                              AddCardToDungeon(e.id);
-                            }}
-                          >
-                            <h2 className="text-lg font-bold">{e.name}</h2>
-                            <p>
-                              {e.attack}/{e.hp}
-                            </p>
-                            <p>{e.type}</p>
-                            <p>{e.is_boss && "(vezér)"}</p>
+                          <div className="items-center flex flex-col gap-2">
+                            <CardCard
+                              card={e}
+                              onClick={() => {
+                                AddCardToDungeon(e.id);
+                              }}
+                            ></CardCard>
                           </div>
                         );
                       })}
@@ -396,7 +392,7 @@ const DungeonCreator = () => {
                       <div className="grid grid-cols-6 gap-2">
                         {dungeonCollection.map((e) => {
                           return (
-                            <div className=" relative border-2 border-white rounded-2xl items-center flex flex-col gap-2 p-3 justify-center bg-white text-black">
+                            <div className=" relative rounded-2xl items-center flex flex-col gap-2  justify-center ">
                               <button
                                 type="button"
                                 onClick={() => HandleDelete(e.id)}
@@ -405,7 +401,7 @@ const DungeonCreator = () => {
                                 <X size={16} />
                               </button>
 
-                              <h2 className="text-md font-bold">{e.name}</h2>
+                              <CardCard card={e}></CardCard>
                             </div>
                           );
                         })}

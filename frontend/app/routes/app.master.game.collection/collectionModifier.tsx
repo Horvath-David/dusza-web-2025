@@ -37,6 +37,7 @@ import {
 } from "~/context/CardCollectionContext";
 import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 import { useGetAllInfo } from "~/helpers";
+import { CardCard } from "../app.player.game.$id/card-card";
 
 const CollectionModifier = () => {
   const getAllInfo = useGetAllInfo();
@@ -237,21 +238,22 @@ const CollectionModifier = () => {
           <h2 className="font-medium text-xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
             Gyűjteményed
           </h2>
-          <div className="w-[50em] h-[25em] border-2 border-white rounded-2xl grid grid-cols-4 p-7 gap-4 overflow-auto">
+          <div className="w-[50em] h-[25em] border-2 border-gray-400 grid grid-cols-4 p-7 gap-4 overflow-auto">
             {collection.map((e, idx) => {
               return (
-                <div
-                  className="border-2 border-white rounded-2xl max-h-48 gap-2 p-3 flex flex-col items-center justify-center hover:bg-white hover:text-black transition duration-1000"
-                  onClick={() => {
-                    setModify(e.id);
-                  }}
-                >
-                  <h2 className="text-lg font-bold">{e.name}</h2>
+                <div className="max-h-48 gap-2 flex flex-col items-center justify-cente transition duration-1000">
+                  <CardCard
+                    card={e}
+                    onClick={() => {
+                      setModify(e.id);
+                    }}
+                  ></CardCard>
+                  {/* <h2 className="text-lg font-bold">{e.name}</h2>
                   <p className="text-md font-bold">
                     {e.attack}/{e.hp}
                   </p>
                   <p>{e.type}</p>
-                  <p>{e.is_boss && "(vezér)"}</p>
+                  <p>{e.is_boss && "(vezér)"}</p> */}
                 </div>
               );
             })}
