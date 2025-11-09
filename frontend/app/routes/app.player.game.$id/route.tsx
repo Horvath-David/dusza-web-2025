@@ -52,7 +52,7 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
           </h1>
 
           <div className="grid grid-cols-6 gap-4">
-            {game.state.cards.map((card) => (
+            {game.state.playerCards.map((card) => (
               <CardCard
                 selected={
                   game.state.phase === "deck" &&

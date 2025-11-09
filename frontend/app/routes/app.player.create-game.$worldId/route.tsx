@@ -53,8 +53,9 @@ export async function clientAction({
       name: (data.name as string) || world.name,
       cards,
       dungeons,
-      playerCards: [],
+      playerCards: world.player_cards,
       playerDeck: [],
+      phase: "overview",
     },
   };
 
