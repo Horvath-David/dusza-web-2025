@@ -1,5 +1,5 @@
 import { ArrowLeft, Plus, X } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -25,6 +25,15 @@ const PlayerDeck = () => {
   const { worldId } = useContext(MasterGeneralContext);
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log(playerDeck);
+    console.log(
+      collection.filter(
+        (n) => !playerDeck.some((c) => c.id === n.id) && !n.is_boss
+      )
+    );
+  }, []);
 
   const AddCardToPlayer = async (id: number) => {
     const newDeck = [...playerDeck, collection.find((e) => e.id === id)!];
@@ -57,6 +66,8 @@ const PlayerDeck = () => {
 
   const HandleDelete = async (id: number) => {
     const newDeck = playerDeck.filter((e) => e.id !== id);
+
+    console.log(newDeck);
     setPlayerDeck(newDeck);
 
     const response = await fetch(`${API_URL}/world/${worldId}/update`, {
@@ -130,13 +141,16 @@ const PlayerDeck = () => {
               Gyűjteményed
             </DialogHeader>
 
-            {collection.filter((n) => !playerDeck.includes(n) && !n.is_boss)
-              .length < 1 ? (
+            {collection.filter(
+              (n) => !playerDeck.some((c) => c.id === n.id) && !n.is_boss
+            ).length < 1 ? (
               <h3>Nincs több kártyád a gyűjteményedben</h3>
             ) : (
               <div className="grid grid-cols-4 gap-3">
                 {collection
-                  .filter((n) => !playerDeck.includes(n) && !n.is_boss)
+                  .filter(
+                    (n) => !playerDeck.some((c) => c.id === n.id) && !n.is_boss
+                  )
                   .map((e) => {
                     return (
                       <div
