@@ -152,7 +152,7 @@ export default function PlayerIndex({ loaderData }: Route.ComponentProps) {
           })}
         >
           <Search />
-          <span>További {loaderData.worlds.length - 4} játék megtekintése</span>
+          <span>További {loaderData.games.length - 4} játék megtekintése</span>
         </Link>
       )}
     </div>

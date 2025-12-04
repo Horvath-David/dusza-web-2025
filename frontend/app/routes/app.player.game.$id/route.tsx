@@ -71,7 +71,7 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
 
     let winner = "";
 
-    const playerCard = game.state.playerCards[game.state.phaseData?.fightIndex];
+    const playerCard = game.state.playerDeck[game.state.phaseData?.fightIndex];
     const enemyCard = activeDungeon?.cards[game.state.phaseData?.fightIndex]!;
 
     const playerKillsEnemy = playerCard.attack > enemyCard.hp;
@@ -454,7 +454,7 @@ export default function PlayerGame({ loaderData }: Route.ComponentProps) {
                   <div className="w-42">
                     <CardCard
                       card={
-                        game.state.playerCards[game.state.phaseData?.fightIndex]
+                        game.state.playerDeck[game.state.phaseData?.fightIndex]
                       }
                       selected={game.state.phaseData?.winner === "player"}
                     />
