@@ -114,11 +114,11 @@ def delete_dungeon(request: WSGIRequest, dungeon_id):
             "error": "Ez nem a te kazamatád"
         }, status=403)
 
-    if dungeon_obj.world.is_public:
-        return JsonResponse({
-            "status": "Error",
-            "error": "Ehhez a kazamatához tartozó világ már publikus"
-        }, status=403)
+    # if dungeon_obj.world.is_public:
+    #     return JsonResponse({
+    #         "status": "Error",
+    #         "error": "Ehhez a kazamatához tartozó világ már publikus"
+    #     }, status=403)
 
     dungeon_obj.delete()
     return JsonResponse({
@@ -147,11 +147,11 @@ def edit_dungeon(request: WSGIRequest, dungeon_id):
             "error": "Ez nem a te kazamatád"
         }, status=403)
 
-    if dungeon_obj.world.is_public:
-        return JsonResponse({
-            "status": "Error",
-            "error": "Ehhez a kazamatához tartozó világ már publikus"
-        }, status=403)
+    # if dungeon_obj.world.is_public:
+    #     return JsonResponse({
+    #         "status": "Error",
+    #         "error": "Ehhez a kazamatához tartozó világ már publikus"
+    #     }, status=403)
 
     if body.get("name"):
         dungeon_obj.name = body.get("name")

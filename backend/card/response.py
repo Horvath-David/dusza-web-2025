@@ -96,11 +96,11 @@ def edit_card(request: WSGIRequest, card_id):
             "status": "Error",
             "error": "Ezt a kártyát nem szerkesztheted"
         }, status=403)
-    if card_obj.world.is_public:
-        return JsonResponse({
-            "status": "Error",
-            "error": "Ezt a kártyát nem törölheted, mert a hozzá tartozó világ már publikus"
-        }, status=403)
+    # if card_obj.world.is_public:
+    #     return JsonResponse({
+    #         "status": "Error",
+    #         "error": "Ezt a kártyát nem törölheted, mert a hozzá tartozó világ már publikus"
+    #     }, status=403)
 
     try:
         body = json.loads(request.body)
@@ -132,11 +132,11 @@ def delete_card(request: WSGIRequest, card_id):
             "status": "Error",
             "error": "Ezt a kártyát nem törölheted"
         }, status=403)
-    if card_obj.world.is_public:
-        return JsonResponse({
-            "status": "Error",
-            "error": "Ezt a kártyát nem törölheted, mert a hozzá tartozó világ már publikus"
-        }, status=403)
+    # if card_obj.world.is_public:
+    #     return JsonResponse({
+    #         "status": "Error",
+    #         "error": "Ezt a kártyát nem törölheted, mert a hozzá tartozó világ már publikus"
+    #     }, status=403)
     card_obj.delete()
 
     return JsonResponse({
