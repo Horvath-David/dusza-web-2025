@@ -1,9 +1,10 @@
 import { SelectValue } from "@radix-ui/react-select";
 import { ArrowLeft, Pencil, Plus, Trash, X } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useParams, useRevalidator } from "react-router";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
+import { Card as ShadcnCard } from "~/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +20,6 @@ import {
   ItemDescription,
   ItemTitle,
 } from "~/components/ui/item";
-import { ScrollArea } from "~/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -29,23 +29,36 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { API_URL } from "~/constants";
 import {
-  CardCollectionContext,
-  type CardType,
-} from "~/context/CardCollectionContext";
-import {
-  DungeonContext,
   type DungeonType,
   type DungeonTypeType,
 } from "~/context/DungeonContext";
-import { MasterGeneralContext } from "~/context/MasterGeneralContext";
-import { useGetAllInfo } from "~/helpers";
+import type { Card, DungeonIdOnly } from "~/models";
 import { CardCard } from "../app.player.game.$id/card-card";
+import type { Route } from "./+types/route";
 
-const DungeonCreator = () => {
-  const getAllInfo = useGetAllInfo();
-  const { dungeons, setDungeons } = useContext(DungeonContext);
-  const { collection } = useContext(CardCollectionContext);
-  const { worldId } = useContext(MasterGeneralContext);
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const res = await fetch(`${API_URL}/world/${params.id}/cards`, {
+    method: "GET",
+    credentials: "include",
+  });
+  const cards = (await res.json()).cards as Card[];
+
+  const dungeonsRes = await fetch(
+    `${API_URL}/world/${params.id}/dungeons?card_ids_only=true`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  );
+  const dungeons = (await dungeonsRes.json()).dungeons as DungeonIdOnly[];
+
+  return { cards, dungeons };
+}
+
+export default function DungeonCreator({ loaderData }: Route.ComponentProps) {
+  const { dungeons, cards: collection } = loaderData;
+  const { id: worldId } = useParams();
+  const revalidator = useRevalidator();
 
   const [dungeoName, setDungeoName] = useState<string>();
   const [dungeonType, setDungeonType] = useState<DungeonTypeType>();
@@ -54,7 +67,7 @@ const DungeonCreator = () => {
   const [isModifying, setIsModifying] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const [dungeonCollection, setDungeonCollection] = useState<CardType[]>([]);
+  const [dungeonCollection, setDungeonCollection] = useState<Card[]>([]);
 
   const [dunId, setDunId] = useState<number>(0);
 
@@ -72,8 +85,6 @@ const DungeonCreator = () => {
 
   const AddDungeon = async () => {
     if (!dungeoName || !dungeonType) return;
-
-    toast("jo");
 
     const cards: number[] = [];
     dungeonCollection.forEach((element) => {
@@ -100,18 +111,10 @@ const DungeonCreator = () => {
       return;
     }
 
-    const dungeon: DungeonType = {
-      id: 0,
-      name: dungeoName,
-      type: dungeonType,
-      cards: cards,
-      world_id: worldId,
-    };
+    await revalidator.revalidate();
 
-    setDungeons([...dungeons, dungeon]);
-    setIsDialogOpen(false);
-    await getAllInfo(worldId);
     toast.success("Sikeres kazamata létrehozzás");
+    setIsDialogOpen(false);
   };
 
   const HandleDelete = (id: number) => {
@@ -132,8 +135,8 @@ const DungeonCreator = () => {
       toast.error(data.error);
       return;
     }
-    setDungeons(dungeons.filter((x) => x.id !== id));
-    await getAllInfo(worldId);
+    await revalidator.revalidate();
+
     toast.success("Sikeres kazamata törlés");
   };
 
@@ -142,7 +145,7 @@ const DungeonCreator = () => {
 
     const dungeon = dungeons.filter((e) => e.id === id)[0];
     setDungeoName(dungeon.name);
-    setDungeonType(dungeon.type);
+    setDungeonType(dungeon.type as DungeonTypeType);
 
     dungeon.cards.forEach((element) => {
       setDungeonCollection((prev) => [
@@ -167,6 +170,7 @@ const DungeonCreator = () => {
       name: dungeoName,
       type: dungeonType,
       cards: cards,
+      //@ts-ignore
       world_id: worldId,
     };
 
@@ -184,10 +188,8 @@ const DungeonCreator = () => {
       toast.error(data.error);
       return;
     }
-    const newDun = dungeons.map((x) => (x.id === dunId ? dungeon : x));
-    setDungeons(newDun);
-    setIsModifying(false);
-    await getAllInfo(worldId);
+    await revalidator.revalidate();
+
     toast.success("Sikeres módosítás");
     setIsDialogOpen(false);
   };
@@ -238,7 +240,7 @@ const DungeonCreator = () => {
 
   return (
     <main className="p-5">
-      <Link to={"/app/master/game"}>
+      <Link to={`/app/master/game/${worldId}`}>
         <Button className="absolute top-[90%] left-[1%]" variant={"outline"}>
           <ArrowLeft></ArrowLeft>
           Vissza
@@ -248,7 +250,7 @@ const DungeonCreator = () => {
         Kazamaták
       </h1>
       <section className="max-w-[50%] m-auto mt-10 flex flex-col gap-8">
-        <ScrollArea className=" max-h-[25em]  border-2 border-gray-500 rounded-2xl p-2 overflow-auto">
+        <ShadcnCard className="h-[65vh] rounded-2xl p-2 overflow-auto">
           {dungeons.length > 0 ? (
             dungeons.map((e) => {
               return (
@@ -289,7 +291,7 @@ const DungeonCreator = () => {
           ) : (
             <h2>Még nincs létrehozott kazamatád</h2>
           )}
-        </ScrollArea>
+        </ShadcnCard>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger>
             <Button className="w-full">
@@ -447,6 +449,4 @@ const DungeonCreator = () => {
       </section>
     </main>
   );
-};
-
-export default DungeonCreator;
+}

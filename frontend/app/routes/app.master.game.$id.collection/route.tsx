@@ -7,8 +7,8 @@ import {
   Swords,
   Trash,
 } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useParams, useRevalidator } from "react-router";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
@@ -31,21 +31,40 @@ import {
 } from "~/components/ui/select";
 import { API_URL } from "~/constants";
 import {
-  CardCollectionContext,
   type CardType,
   type ElementsType,
 } from "~/context/CardCollectionContext";
-import { MasterGeneralContext } from "~/context/MasterGeneralContext";
-import { useGetAllInfo } from "~/helpers";
+import type { Card, Dungeon, DungeonIdOnly } from "~/models";
 import { CardCard } from "../app.player.game.$id/card-card";
+import type { Route } from "./+types/route";
+import { CardContent, Card as ShadcnCard } from "~/components/ui/card";
 
-const CollectionModifier = () => {
-  const getAllInfo = useGetAllInfo();
-  const { collection, setCollection, modifyCard } = useContext(
-    CardCollectionContext
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const res = await fetch(`${API_URL}/world/${params.id}/cards`, {
+    method: "GET",
+    credentials: "include",
+  });
+  const cards = (await res.json()).cards as Card[];
+
+  const dungeonsRes = await fetch(
+    `${API_URL}/world/${params.id}/dungeons?card_ids_only=true`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
   );
+  const dungeons = (await dungeonsRes.json()).dungeons as DungeonIdOnly[];
 
-  const { worldId } = useContext(MasterGeneralContext);
+  return { cards, dungeons };
+}
+
+export default function CollectionModifier({
+  loaderData,
+}: Route.ComponentProps) {
+  const revalidator = useRevalidator();
+
+  const { cards: collection } = loaderData;
+  const { id: worldId } = useParams();
 
   const [cardElement, setCardElement] = useState<ElementsType>();
   const [cardName, setCardName] = useState<string>();
@@ -99,19 +118,7 @@ const CollectionModifier = () => {
       return;
     }
 
-    const data = await response.json();
-
-    const card: CardType = {
-      id: data.ids[0],
-      name: cardName,
-      attack: attack,
-      hp: health,
-      type: cardElement,
-      is_boss: isBossCard,
-    };
-
-    setCollection([...collection, card]);
-    await getAllInfo(worldId);
+    await revalidator.revalidate();
 
     toast.success("Sikeressen létrehoztad a kártyát!");
 
@@ -124,7 +131,7 @@ const CollectionModifier = () => {
     const card = collection.filter((x) => x.id === id)[0];
     setCardId(id);
 
-    setCardElement(card.type);
+    setCardElement(card.type as ElementsType);
     setCardHealth(card.hp);
     setCardAttack(card.attack);
     setCardName(card.name);
@@ -163,8 +170,7 @@ const CollectionModifier = () => {
       return;
     }
 
-    modifyCard(cardId, card);
-    await getAllInfo(worldId);
+    await revalidator.revalidate();
 
     toast.success("Sikeressen módosítottad a kártyát!");
 
@@ -185,8 +191,8 @@ const CollectionModifier = () => {
       toast.error(data.error);
       return;
     }
-    setCollection(collection.filter((x) => x.id !== cardId));
-    await getAllInfo(worldId);
+    await revalidator.revalidate();
+
     toast.success("Sikeressen kitörölted a kártyát!");
 
     setIsdialogOpen(false);
@@ -224,7 +230,7 @@ const CollectionModifier = () => {
 
   return (
     <main className="p-5">
-      <Link to={"/app/master/game"}>
+      <Link to={`/app/master/game/${worldId}`}>
         <Button className="absolute top-[90%] left-[1%]" variant={"outline"}>
           <ArrowLeft></ArrowLeft>
           Vissza
@@ -238,26 +244,28 @@ const CollectionModifier = () => {
           <h2 className="font-medium text-xl bg-linear-to-b from-black via-black to-neutral-500 dark:from-white via-50% dark:via-white dark:to-neutral-600 bg-clip-text text-transparent">
             Gyűjteményed
           </h2>
-          <div className="w-[50em] h-[25em] border-2 border-gray-400 grid grid-cols-4 p-7 gap-4 overflow-auto">
-            {collection.map((e, idx) => {
-              return (
-                <div className="max-h-48 gap-2 flex flex-col items-center justify-cente transition duration-1000">
-                  <CardCard
-                    card={e}
-                    onClick={() => {
-                      setModify(e.id);
-                    }}
-                  ></CardCard>
-                  {/* <h2 className="text-lg font-bold">{e.name}</h2>
+          <ShadcnCard className="w-[50em] h-[65vh] gap-4 overflow-auto">
+            <CardContent className="grid grid-cols-4 gap-4">
+              {collection.map((e, idx) => {
+                return (
+                  <div className="max-h-48 gap-2 flex flex-col items-center justify-cente transition duration-1000">
+                    <CardCard
+                      card={e}
+                      onClick={() => {
+                        setModify(e.id);
+                      }}
+                    ></CardCard>
+                    {/* <h2 className="text-lg font-bold">{e.name}</h2>
                   <p className="text-md font-bold">
                     {e.attack}/{e.hp}
                   </p>
                   <p>{e.type}</p>
                   <p>{e.is_boss && "(vezér)"}</p> */}
-                </div>
-              );
-            })}
-          </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </ShadcnCard>
           <Dialog open={isDialogOpen} onOpenChange={setIsdialogOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -431,6 +439,4 @@ const CollectionModifier = () => {
       </section>
     </main>
   );
-};
-
-export default CollectionModifier;
+}

@@ -31,6 +31,8 @@ export interface Dungeon {
   cards: Card[];
 }
 
+export type DungeonIdOnly = Omit<Dungeon, "cards"> & { cards: number[] };
+
 export interface GameStateResponse {
   id: number;
   world: {

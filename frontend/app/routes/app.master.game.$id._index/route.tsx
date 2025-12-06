@@ -1,11 +1,10 @@
 import { ArrowLeft, Book, Castle, Scroll } from "lucide-react";
-import { useContext, useEffect } from "react";
-import { Link } from "react-router";
-import { toast } from "sonner";
+import { Link, useParams } from "react-router";
 import { Button } from "~/components/ui/button";
-import { MasterGeneralContext } from "~/context/MasterGeneralContext";
 
-const MasterGameCreator = () => {
+export default function MasterGameCreator() {
+  const { id } = useParams();
+
   return (
     <main className="h-full flex flex-col">
       <Link to={"/app/master/"}>
@@ -22,7 +21,7 @@ const MasterGameCreator = () => {
 
       <div className="w-full h-full flex-2 flex flex-row gap-8 p-10">
         <Link
-          to="collection"
+          to={`/app/master/game/${id}/collection`}
           className="bg-linear-to-bl from-green-800 to-red-800 rounded-3xl w-full h-full hover:brightness-110"
         >
           <div className="border-3 border-white/20 w-full h-full flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-3xl">
@@ -32,7 +31,7 @@ const MasterGameCreator = () => {
         </Link>
 
         <Link
-          to="dungeon"
+          to={`/app/master/game/${id}/dungeon`}
           className="bg-linear-to-br from-cyan-800 to-violet-800 rounded-3xl w-full h-full hover:brightness-110"
         >
           <div className="border-3 border-white/20 w-full h-full flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-3xl">
@@ -42,7 +41,7 @@ const MasterGameCreator = () => {
         </Link>
 
         <Link
-          to="player"
+          to={`/app/master/game/${id}/player`}
           className="bg-linear-to-br from-amber-600 to-red-700 rounded-3xl w-full h-full hover:brightness-110"
         >
           <div className="border-3 border-white/20 w-full h-full flex flex-col items-center justify-center gap-4 overflow-hidden bg-clip-padding rounded-3xl">
@@ -63,6 +62,4 @@ const MasterGameCreator = () => {
       </Link> */}
     </main>
   );
-};
-
-export default MasterGameCreator;
+}
